@@ -31,9 +31,11 @@ cloudinary.config({
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log('Connected to MongoDB successfully.');
-    seedInitialData();
+    await seedInitialData();
+    // Update all existing project colors to #ff3a00 to align with the design theme
+    await Project.updateMany({}, { color: '#ff3a00' });
   })
   .catch(err => console.error('MongoDB connection error:', err));
 
@@ -59,12 +61,12 @@ async function seedInitialData() {
     if (count === 0) {
       console.log('Seeding initial project data...');
       const initialProjects = [
-        { id: 0, name: 'Moving Portraits', slug: 'moving-portraits', image: '/images/moving-portraits.png', color: '#ff3e00', year: '2026', role: 'Creative Director & WebGL', technology: 'Three.js, GLSL, GSAP', link: '#' },
-        { id: 1, name: 'Issey Miyake SS25', slug: 'issey-miyake-ss25', image: '/images/issey-miyake.png', color: '#ff5500', year: '2025', role: 'Interactive Engineer', technology: 'WebGL, Vanilla JS, CSS3D', link: '#' },
-        { id: 2, name: 'Studies in Motion', slug: 'studies-in-motion', image: '/images/studies-in-motion.png', color: '#ff6600', year: '2025', role: 'Motion Lead', technology: 'GSAP ScrollTrigger, Lenis', link: '#' },
-        { id: 3, name: 'Ruby Campbell', slug: 'ruby-campbell', image: '/images/ruby-campbell.png', color: '#ff7700', year: '2024', role: 'Fullstack Developer', technology: 'SvelteKit, Node.js, GSAP', link: '#' },
-        { id: 4, name: 'Shaped by Earth', slug: 'shaped-by-earth', image: '/images/shaped-by-earth.png', color: '#ff8800', year: '2024', role: '3D Developer', technology: 'Three.js, Blender, GSAP', link: '#' },
-        { id: 5, name: 'Echoes in Light', slug: 'echoes-in-light', image: '/images/echoes-in-light.png', color: '#ff9900', year: '2023', role: 'Creative Technologist', technology: 'Canvas2D, Custom WebAudio', link: '#' }
+        { id: 0, name: 'Moving Portraits', slug: 'moving-portraits', image: '/images/moving-portraits.png', color: '#ff3a00', year: '2026', role: 'Creative Director & WebGL', technology: 'Three.js, GLSL, GSAP', link: '#' },
+        { id: 1, name: 'Issey Miyake SS25', slug: 'issey-miyake-ss25', image: '/images/issey-miyake.png', color: '#ff3a00', year: '2025', role: 'Interactive Engineer', technology: 'WebGL, Vanilla JS, CSS3D', link: '#' },
+        { id: 2, name: 'Studies in Motion', slug: 'studies-in-motion', image: '/images/studies-in-motion.png', color: '#ff3a00', year: '2025', role: 'Motion Lead', technology: 'GSAP ScrollTrigger, Lenis', link: '#' },
+        { id: 3, name: 'Ruby Campbell', slug: 'ruby-campbell', image: '/images/ruby-campbell.png', color: '#ff3a00', year: '2024', role: 'Fullstack Developer', technology: 'SvelteKit, Node.js, GSAP', link: '#' },
+        { id: 4, name: 'Shaped by Earth', slug: 'shaped-by-earth', image: '/images/shaped-by-earth.png', color: '#ff3a00', year: '2024', role: '3D Developer', technology: 'Three.js, Blender, GSAP', link: '#' },
+        { id: 5, name: 'Echoes in Light', slug: 'echoes-in-light', image: '/images/echoes-in-light.png', color: '#ff3a00', year: '2023', role: 'Creative Technologist', technology: 'Canvas2D, Custom WebAudio', link: '#' }
       ];
       await Project.insertMany(initialProjects);
       console.log('Initial projects seeded successfully.');
