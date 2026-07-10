@@ -125,6 +125,9 @@
           <!-- Central 3D Canvas Box -->
           <div class="canvas-container" id="canvas-container">
             <canvas id="cube-canvas"></canvas>
+            <button id="canvas-open-btn" class="canvas-open-btn hidden">
+              <span data-i18n="btn_open_project">ABRIR PROJETO</span> ↗
+            </button>
             <div class="canvas-instruction" data-i18n="canvas_instruction">ARRASTE PARA ROTACIONAR • CLIQUE NAS IMAGENS PARA EXPLORAR</div>
           </div>
 
@@ -356,6 +359,46 @@
       </div>
       <div class="bottom-banner__text">VIBE</div>
     </footer>
+
+    <!-- Project Details Overlay (Sliding Drawer) -->
+    <div id="project-overlay" class="project-overlay hidden">
+      <div class="project-overlay__close-btn" id="project-overlay-close">&times;</div>
+      
+      <div class="project-overlay__container">
+        <!-- Left Column: Title & Header -->
+        <div class="project-overlay__left">
+          <span class="project-overlay__subtitle" data-i18n="overlay_project_details">DETALHES DO PROJETO</span>
+          <h2 class="project-overlay__main-title" data-i18n="overlay_title">TRABALHOS SELECIONADOS</h2>
+          <div class="project-overlay__brand">VIBE // STUDIO</div>
+        </div>
+
+        <!-- Right Column: Content card matching screenshot -->
+        <div class="project-overlay__right">
+          <div class="project-card-detail">
+            <span class="project-card-number" id="overlay-number">01</span>
+            
+            <div class="project-card-image-wrapper">
+              <img id="overlay-image" src="" alt="Project Cover" />
+            </div>
+
+            <h3 class="project-card-title" id="overlay-title">FONDAZIONE GUASTALLA</h3>
+            
+            <div class="project-card-meta">
+              <span class="project-card-tech" id="overlay-tech">DIGITAL, BRANDING, STRATEGY</span>
+              <span class="project-card-year" id="overlay-year">2026</span>
+            </div>
+
+            <p class="project-card-desc" id="overlay-desc">
+              We helped the foundation express its vision of contemporary culture—bridging art, thought, and society through visuals that reflect research, openness, and creative dialogue.
+            </p>
+
+            <a href="#" target="_blank" class="project-card-discover-btn" id="overlay-link">
+              <span data-i18n="btn_discover_more">DESCOBRIR MAIS</span> ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script type="module" src="/src/main.js"></script>
   </body>

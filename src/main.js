@@ -72,7 +72,11 @@ const TRANSLATIONS = {
     admin_form_error_generic: "Ocorreu um erro.",
     admin_form_success_generic: "Projeto salvo com sucesso!",
     email_copied_msg: "Email copiado!",
-    click_copy_msg: "Clique para copiar o email"
+    click_copy_msg: "Clique para copiar o email",
+    btn_open_project: "ABRIR PROJETO",
+    overlay_project_details: "DETALHES DO PROJETO",
+    overlay_title: "TRABALHOS SELECIONADOS",
+    btn_discover_more: "DESCOBRIR MAIS"
   },
   en: {
     doc_title: "VIBE — Creative Developer Portfolio",
@@ -142,7 +146,11 @@ const TRANSLATIONS = {
     admin_form_error_generic: "An error occurred.",
     admin_form_success_generic: "Project saved successfully!",
     email_copied_msg: "Email copied!",
-    click_copy_msg: "Click to copy email"
+    click_copy_msg: "Click to copy email",
+    btn_open_project: "OPEN PROJECT",
+    overlay_project_details: "PROJECT DETAILS",
+    overlay_title: "SELECTED WORKS",
+    btn_discover_more: "DISCOVER MORE"
   }
 };
 
@@ -150,6 +158,10 @@ const TRANSLATIONS = {
 let projectsData = [];
 let currentLang = 'pt';
 const DEFAULT_COLOR = '#ff3a00';
+
+// Zoom timers and active selections
+let zoomTimeout = null;
+let activeProject = null;
 
 // fallback local mock data in case API fails
 const FALLBACK_PROJECTS = [
@@ -259,9 +271,7 @@ function populateUI() {
 // Language Switcher Logic
 function initTranslationEngine() {
   const langToggle = document.getElementById('lang-toggle');
-  const langToggleText = document.getElementById('lang-toggle-text');
 
-  // Read saved language preference, default to Portuguese (pt)
   currentLang = localStorage.getItem('vibe_lang') || 'pt';
   updateTranslations();
 
@@ -279,7 +289,6 @@ function initTranslationEngine() {
 function updateTranslations() {
   const langToggleText = document.getElementById('lang-toggle-text');
   if (langToggleText) {
-    // Show the target language on the button
     langToggleText.textContent = currentLang === 'pt' ? 'EN' : 'PT';
   }
 
@@ -574,6 +583,7 @@ function initThreeCanvas() {
   }, { passive: true });
   window.addEventListener('touchend', onPointerUp);
 
+  // Click handler (Raycast Zoom & Show Open Button)
   canvas.addEventListener('click', () => {
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(panels);
@@ -582,13 +592,34 @@ function initThreeCanvas() {
       const clickedPanel = intersects[0].object;
       const project = clickedPanel.userData.project;
       
+      // Cancel any active timeouts/zooms
+      if (zoomTimeout) clearTimeout(zoomTimeout);
+      activeProject = project;
+
+      // Hide open button while zooming
+      const openBtn = document.getElementById('canvas-open-btn');
+      openBtn.classList.add('hidden');
+
       gsap.to(camera.position, {
         z: 2.8,
         duration: 0.8,
         ease: 'power3.inOut',
         onComplete: () => {
           highlightMarqueeItem(project.id);
-          gsap.to(camera.position, { z: 5.2, duration: 1, ease: 'power2.out' });
+          
+          // Show the open button in the center
+          openBtn.classList.remove('hidden');
+
+          // Auto-zoom out if no action taken in 5 seconds
+          zoomTimeout = setTimeout(() => {
+            openBtn.classList.add('hidden');
+            gsap.to(camera.position, {
+              z: 5.2,
+              duration: 1,
+              ease: 'power2.out'
+            });
+            activeProject = null;
+          }, 5000);
         }
       });
     }
@@ -780,6 +811,64 @@ function setupMarqueeHoverTriggers() {
       });
     });
   });
+}
+
+// Detailed Project Overlay controller
+function initOverlayControls() {
+  const openBtn = document.getElementById('canvas-open-btn');
+  const overlay = document.getElementById('project-overlay');
+  const closeBtn = document.getElementById('project-overlay-close');
+
+  if (openBtn && overlay && closeBtn) {
+    openBtn.addEventListener('click', () => {
+      if (!activeProject) return;
+
+      // Cancel auto-zoom timeout
+      if (zoomTimeout) clearTimeout(zoomTimeout);
+
+      // Hide the open button
+      openBtn.classList.add('hidden');
+
+      // Populate elements
+      document.getElementById('overlay-number').textContent = (activeProject.id + 1).toString().padStart(2, '0');
+      document.getElementById('overlay-image').src = activeProject.image;
+      document.getElementById('overlay-title').textContent = activeProject.name;
+      document.getElementById('overlay-tech').textContent = activeProject.technology;
+      document.getElementById('overlay-year').textContent = activeProject.year;
+      
+      const ptDesc = `Projeto de desenvolvimento interativo focado em design de alto impacto. Desenvolvido para a função de ${activeProject.role} utilizando a tecnologia ${activeProject.technology}.`;
+      const enDesc = `An interactive development project focusing on high-impact experience design. Crafted for the role of ${activeProject.role} utilizing ${activeProject.technology} tech.`;
+      
+      document.getElementById('overlay-desc').textContent = currentLang === 'pt' ? ptDesc : enDesc;
+      document.getElementById('overlay-link').href = activeProject.link || '#';
+
+      // Open detailed modal overlay
+      overlay.classList.remove('hidden');
+      gsap.fromTo(overlay,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5, ease: 'power2.out' }
+      );
+    });
+
+    closeBtn.addEventListener('click', () => {
+      gsap.to(overlay, {
+        opacity: 0,
+        duration: 0.4,
+        ease: 'power2.in',
+        onComplete: () => {
+          overlay.classList.add('hidden');
+          
+          // Revert camera zoom
+          gsap.to(camera.position, {
+            z: 5.2,
+            duration: 1,
+            ease: 'power2.out'
+          });
+          activeProject = null;
+        }
+      });
+    });
+  }
 }
 
 
@@ -1082,14 +1171,11 @@ function initProjectForm() {
    ========================================== */
 
 window.addEventListener('DOMContentLoaded', async () => {
-  // Init translations before fetching/populating to ensure proper link elements are generated
   initTranslationEngine();
 
-  // Fetch from DB and build dynamic interface
   await fetchProjects();
   populateUI();
 
-  // Smooth scroll
   lenis = new Lenis({
     duration: 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -1111,6 +1197,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Admin logic
   initAdminAuth();
   initProjectForm();
+
+  // Overlay controller logic
+  initOverlayControls();
 
   // Setup cursor
   setupCursorHovers();
