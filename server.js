@@ -1,0 +1,266 @@
+import express from 'express';
+import mongoose from 'mongoose';
+import { v2 as cloudinary } from 'cloudinary';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import multer from 'multer';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Load environment variables
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Cloudinary Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('Connected to MongoDB successfully.');
+    seedInitialData();
+  })
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// Mongoose Schema
+const projectSchema = new mongoose.Schema({
+  id: { type: Number, required: true },
+  name: { type: String, required: true },
+  slug: { type: String, required: true },
+  image: { type: String, required: true }, // Cloudinary URL or local path
+  color: { type: String, default: '#ff3e00' },
+  year: { type: String, required: true },
+  role: { type: String, required: true },
+  technology: { type: String, required: true },
+  link: { type: String, default: '#' }
+}, { timestamps: true });
+
+const Project = mongoose.model('Project', projectSchema);
+
+// Initial Data Seeding
+async function seedInitialData() {
+  try {
+    const count = await Project.countDocuments();
+    if (count === 0) {
+      console.log('Seeding initial project data...');
+      const initialProjects = [
+        { id: 0, name: 'Moving Portraits', slug: 'moving-portraits', image: '/images/moving-portraits.png', color: '#ff3e00', year: '2026', role: 'Creative Director & WebGL', technology: 'Three.js, GLSL, GSAP', link: '#' },
+        { id: 1, name: 'Issey Miyake SS25', slug: 'issey-miyake-ss25', image: '/images/issey-miyake.png', color: '#ff5500', year: '2025', role: 'Interactive Engineer', technology: 'WebGL, Vanilla JS, CSS3D', link: '#' },
+        { id: 2, name: 'Studies in Motion', slug: 'studies-in-motion', image: '/images/studies-in-motion.png', color: '#ff6600', year: '2025', role: 'Motion Lead', technology: 'GSAP ScrollTrigger, Lenis', link: '#' },
+        { id: 3, name: 'Ruby Campbell', slug: 'ruby-campbell', image: '/images/ruby-campbell.png', color: '#ff7700', year: '2024', role: 'Fullstack Developer', technology: 'SvelteKit, Node.js, GSAP', link: '#' },
+        { id: 4, name: 'Shaped by Earth', slug: 'shaped-by-earth', image: '/images/shaped-by-earth.png', color: '#ff8800', year: '2024', role: '3D Developer', technology: 'Three.js, Blender, GSAP', link: '#' },
+        { id: 5, name: 'Echoes in Light', slug: 'echoes-in-light', image: '/images/echoes-in-light.png', color: '#ff9900', year: '2023', role: 'Creative Technologist', technology: 'Canvas2D, Custom WebAudio', link: '#' }
+      ];
+      await Project.insertMany(initialProjects);
+      console.log('Initial projects seeded successfully.');
+    }
+  } catch (err) {
+    console.error('Error seeding data:', err);
+  }
+}
+
+// Multer in-memory storage configuration
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+// Authentication Middleware
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (!token) return res.status(401).json({ message: 'No token provided. Access denied.' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Invalid token.' });
+    req.user = user;
+    next();
+  });
+};
+
+// API ROUTES
+
+// Login Route
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  
+  const envUsername = process.env.ADMIN_USERNAME || 'admin';
+  const envPassword = process.env.ADMIN_PASSWORD || 'vibestudio2026';
+
+  if (username === envUsername && password === envPassword) {
+    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    return res.json({ token, message: 'Authentication successful.' });
+  }
+
+  return res.status(401).json({ message: 'Invalid username or password.' });
+});
+
+// Verify Session
+app.get('/api/auth/verify', authenticateToken, (req, res) => {
+  res.json({ valid: true, username: req.user.username });
+});
+
+// Fetch all projects
+app.get('/api/projects', async (req, res) => {
+  try {
+    const projects = await Project.find().sort({ id: 1 });
+    res.json(projects);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching projects.', error: err.message });
+  }
+});
+
+// Create project
+app.post('/api/projects', authenticateToken, upload.single('image'), async (req, res) => {
+  try {
+    const { name, slug, color, year, role, technology, link } = req.body;
+    
+    if (!name || !slug || !year || !role || !technology) {
+      return res.status(400).json({ message: 'All fields (except link/color) are required.' });
+    }
+
+    let imageUrl = '';
+    
+    if (req.file) {
+      // Upload buffer to Cloudinary
+      const uploadResult = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'vibe_portfolio', resource_type: 'image' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+      imageUrl = uploadResult.secure_url;
+    } else {
+      return res.status(400).json({ message: 'An image file is required.' });
+    }
+
+    // Determine new project ID
+    const lastProject = await Project.findOne().sort({ id: -1 });
+    const newId = lastProject ? lastProject.id + 1 : 0;
+
+    const newProject = new Project({
+      id: newId,
+      name,
+      slug,
+      image: imageUrl,
+      color: color || '#ff3e00',
+      year,
+      role,
+      technology,
+      link: link || '#'
+    });
+
+    await newProject.save();
+    res.status(201).json(newProject);
+  } catch (err) {
+    res.status(500).json({ message: 'Error creating project.', error: err.message });
+  }
+});
+
+// Update project
+app.put('/api/projects/:id', authenticateToken, upload.single('image'), async (req, res) => {
+  try {
+    const { name, slug, color, year, role, technology, link } = req.body;
+    const project = await Project.findById(req.params.id);
+
+    if (!project) return res.status(404).json({ message: 'Project not found.' });
+
+    let imageUrl = project.image;
+
+    if (req.file) {
+      // Delete old image from Cloudinary if it is a Cloudinary URL
+      if (project.image.includes('res.cloudinary.com')) {
+        try {
+          const publicId = 'vibe_portfolio/' + project.image.split('/').pop().split('.')[0];
+          await cloudinary.uploader.destroy(publicId);
+        } catch (err) {
+          console.warn('Could not delete old image from Cloudinary:', err.message);
+        }
+      }
+
+      // Upload new image buffer to Cloudinary
+      const uploadResult = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'vibe_portfolio', resource_type: 'image' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+      imageUrl = uploadResult.secure_url;
+    }
+
+    project.name = name || project.name;
+    project.slug = slug || project.slug;
+    project.image = imageUrl;
+    project.color = color || project.color;
+    project.year = year || project.year;
+    project.role = role || project.role;
+    project.technology = technology || project.technology;
+    project.link = link || project.link;
+
+    await project.save();
+    res.json(project);
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating project.', error: err.message });
+  }
+});
+
+// Delete project
+app.delete('/api/projects/:id', authenticateToken, async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ message: 'Project not found.' });
+
+    // Delete image from Cloudinary if hosted there
+    if (project.image.includes('res.cloudinary.com')) {
+      try {
+        const publicId = 'vibe_portfolio/' + project.image.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.warn('Could not delete image from Cloudinary:', err.message);
+      }
+    }
+
+    await Project.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Project deleted successfully.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting project.', error: err.message });
+  }
+});
+
+// Serve static frontend files in production
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Catch-all route to serve the React/Vite index.html for unknown client routes
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

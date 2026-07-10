@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VIBE — Creative Developer Portfolio</title>
+    <!-- Fonts: Outfit (modern sans-serif) & DM Mono (monospace metadata) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Preloader Screen -->
+    <div id="preloader" class="preloader">
+      <div class="preloader__inner">
+        <span class="preloader__subtitle">INITIALIZING WORKSPACE</span>
+        <div class="preloader__progress">
+          <div id="preloader-bar" class="preloader__bar"></div>
+        </div>
+        <div class="preloader__meta">
+          <span id="preloader-percentage" class="preloader__percentage">00%</span>
+          <span class="preloader__status">LOADING SYSTEM_ASSETS</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div id="custom-cursor" class="custom-cursor">
+      <div class="custom-cursor__dot"></div>
+      <div class="custom-cursor__ring"></div>
+      <div class="custom-cursor__label">VIEW</div>
+    </div>
+
+    <!-- Layout Grid Lines (Alt+G Toggle) -->
+    <div id="grid-helper" class="grid-helper">
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      <div class="grid-line"></div>
+      
+      <!-- Coordinate displays at intersections -->
+      <div class="grid-coordinate top-left">0,0</div>
+      <div class="grid-coordinate bottom-right">MAX_X,MAX_Y</div>
+      <div class="grid-ruler-v"></div>
+      <div class="grid-ruler-h"></div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="header">
+      <div class="header__inner">
+        <div class="logo">
+          <a href="#" data-section="works" class="logo__link">VIBE<span class="dot">.</span></a>
+        </div>
+        
+        <nav class="navigation">
+          <button data-section="works" class="nav-link active">Featured Works</button>
+          <button data-section="archive" class="nav-link">Archive</button>
+          <button data-section="about" class="nav-link">About</button>
+          <button data-section="admin" class="nav-link">Admin</button>
+        </nav>
+
+        <div class="header-actions">
+          <button id="grid-toggle" class="btn-grid" aria-label="Toggle composition grid (Alt+G)">
+            <span class="btn-grid__text">Dimensions</span>
+          </button>
+          
+          <div class="availability" id="availability-badge">
+            <span class="availability__square"></span>
+            <span class="availability__text">Available Sept. 2026</span>
+            <div class="availability__tooltip" id="email-tooltip">Click to copy email</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- App Main Container -->
+    <main id="app">
+      
+      <!-- BACKGROUND BIG LETTERING -->
+      <div class="bg-lettering" id="bg-lettering">FW</div>
+
+      <!-- VIEW: FEATURED WORKS (DEFAULT) -->
+      <section id="section-works" class="section-view active">
+        <div class="works-layout">
+          <!-- Left side editorial info -->
+          <div class="works-sidebar">
+            <div class="dimension-label" id="screen-dimensions-display">1536px × 730px</div>
+            
+            <div class="dev-info">
+              <div class="dev-info__meta">
+                <span class="label">CREATOR</span>
+                <h2 class="value">Vibe</h2>
+                <span class="value-sub">Creative Developer</span>
+              </div>
+              <div class="dev-info__meta">
+                <span class="label">COLLECTION</span>
+                <span class="value">Issue N°003 / Coll. 2026</span>
+                <span class="value-sub">Ref. EDI-032026-R02</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Central 3D Canvas Box -->
+          <div class="canvas-container" id="canvas-container">
+            <canvas id="cube-canvas"></canvas>
+            <div class="canvas-instruction">DRAG TO ROTATE • CLICK IMAGES TO EXPLORE</div>
+          </div>
+
+          <!-- Right side infinite vertical scroll lists -->
+          <div class="works-list-container" id="marquee-container">
+            <div class="works-marquee-wrapper">
+              <div class="works-marquee" id="marquee-1">
+                <ul class="works-marquee__list" id="works-list-ul">
+                  <!-- Will be loaded dynamically from DB -->
+                  <li class="marquee-item"><span class="marquee-link">Loading...</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: ARCHIVE -->
+      <section id="section-archive" class="section-view">
+        <div class="archive-container">
+          <h1 class="archive-title">ARCHIVE</h1>
+          <div class="archive-table-wrapper">
+            <table class="archive-table">
+              <thead>
+                <tr>
+                  <th>YEAR</th>
+                  <th>PROJECT</th>
+                  <th>ROLE</th>
+                  <th>TECHNOLOGY</th>
+                  <th>LINK</th>
+                </tr>
+              </thead>
+              <tbody id="archive-table-body">
+                <!-- Loaded dynamically from DB -->
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 40px 0; font-family: var(--font-mono); color: var(--text-muted);">Loading projects...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: ABOUT -->
+      <section id="section-about" class="section-view">
+        <div class="about-container">
+          <div class="about-grid">
+            <div class="about-image-column">
+              <div class="about-image-wrapper">
+                <img id="about-portrait" src="/images/moving-portraits.png" alt="Vibe Portrait" class="about-portrait-img" />
+                <div class="about-image-overlay">VIBE // STUDIO</div>
+              </div>
+            </div>
+            
+            <div class="about-text-column">
+              <div class="about-header">
+                <span class="subtitle">ABOUT THE CREATIVE</span>
+                <h1 class="about-title">VIBE</h1>
+                <p class="tagline">Crafting high-fidelity, animation-driven interactive experiences.</p>
+              </div>
+
+              <div class="about-bio">
+                <p>
+                  As an independent creative developer, I focus on bridging the gap between design and engineering. By utilizing advanced animations, 3D WebGL scenes, and strict Swiss layouts, I create digital experiences that leave a lasting impression.
+                </p>
+                <p>
+                  Through disciplined grids, typographic hierarchy, and responsive physical interactions, my work aims to feel premium, lightweight, and interactive.
+                </p>
+              </div>
+
+              <div class="about-details">
+                <div class="details-section">
+                  <h3 class="details-title">EXPERTISE</h3>
+                  <ul class="details-list">
+                    <li>Creative Development</li>
+                    <li>WebGL / Three.js / GLSL</li>
+                    <li>Advanced CSS & GSAP Animations</li>
+                    <li>Interactive Experience Design</li>
+                  </ul>
+                </div>
+                
+                <div class="details-section">
+                  <h3 class="details-title">AWARDS & RECOGNITIONS</h3>
+                  <ul class="details-list">
+                    <li>Awwwards Site of the Day (2026)</li>
+                    <li>CSS Design Awards Best UI/UX</li>
+                    <li>FWA of the Day</li>
+                    <li>Developer Award (Score 7.53)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="about-footer">
+                <span class="footer-label">GET IN TOUCH</span>
+                <a href="mailto:hello@vibe.dev" class="contact-email">hello@vibe.dev ↗</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: ADMIN PANEL -->
+      <section id="section-admin" class="section-view">
+        <div class="admin-container">
+          
+          <!-- ADMIN LOGIN VIEW -->
+          <div id="admin-login-card" class="admin-card login-card active">
+            <h1 class="admin-card__title">AUTHENTICATE SYSTEM</h1>
+            <p class="admin-card__subtitle">VIBE Admin Workspace Access</p>
+            
+            <form id="admin-login-form" class="admin-form">
+              <div class="form-group">
+                <label for="login-username">SYSTEM ID</label>
+                <input type="text" id="login-username" placeholder="Username" required autocomplete="username" />
+              </div>
+              <div class="form-group">
+                <label for="login-password">ACCESS PASSWORD</label>
+                <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password" />
+              </div>
+              <div class="form-error" id="login-error">Invalid System Credentials.</div>
+              <button type="submit" class="btn-admin-submit">INITIALIZE ACCESS</button>
+            </form>
+          </div>
+
+          <!-- ADMIN DASHBOARD VIEW (HIDDEN BY DEFAULT) -->
+          <div id="admin-dashboard-card" class="admin-card dashboard-card">
+            <div class="dashboard-header">
+              <div>
+                <h1 class="admin-card__title">SYSTEM CONTROL</h1>
+                <p class="admin-card__subtitle">Configure portfolio projects databases</p>
+              </div>
+              <button id="admin-logout-btn" class="btn-admin-secondary">TERMINATE ACCESS</button>
+            </div>
+
+            <div class="dashboard-grid">
+              
+              <!-- Project creation form -->
+              <div class="dashboard-column form-column">
+                <h2 class="column-title" id="form-action-title">ADD NEW PORTFOLIO</h2>
+                
+                <form id="project-form" class="admin-form">
+                  <!-- Secret DB ID for edits -->
+                  <input type="hidden" id="project-db-id" />
+                  
+                  <div class="form-group">
+                    <label for="project-name">PROJECT NAME</label>
+                    <input type="text" id="project-name" placeholder="e.g. Moving Portraits" required />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="project-slug">URL SLUG</label>
+                    <input type="text" id="project-slug" placeholder="e.g. moving-portraits" required />
+                  </div>
+                  
+                  <div class="form-row-2">
+                    <div class="form-group">
+                      <label for="project-year">YEAR</label>
+                      <input type="text" id="project-year" placeholder="e.g. 2026" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="project-color">ACCENT COLOR</label>
+                      <div class="color-picker-wrapper">
+                        <input type="color" id="project-color" value="#ff3e00" />
+                        <input type="text" id="project-color-text" value="#ff3e00" maxlength="7" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="project-role">DEVELOPMENT ROLE</label>
+                    <input type="text" id="project-role" placeholder="e.g. Creative Technologist" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="project-tech">TECHNOLOGY STACK</label>
+                    <input type="text" id="project-tech" placeholder="e.g. Three.js, GSAP, WebGL" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="project-link">EXTERNAL LINK</label>
+                    <input type="text" id="project-link" placeholder="e.g. https://myproject.com or #" value="#" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="project-image" id="image-input-label">IMAGE COVER FILE (MAX 5MB)</label>
+                    <input type="file" id="project-image" accept="image/*" />
+                    <span class="file-help-text" id="file-help-text">Select a JPG/PNG image cover</span>
+                  </div>
+
+                  <div class="form-error" id="project-form-error">An error occurred.</div>
+                  <div class="form-success" id="project-form-success">Project saved successfully!</div>
+
+                  <div class="form-actions">
+                    <button type="submit" id="btn-project-save" class="btn-admin-submit">COMMIT TO DATABASE</button>
+                    <button type="button" id="btn-project-cancel" class="btn-admin-secondary hidden">CANCEL EDIT</button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- List of projects in DB -->
+              <div class="dashboard-column list-column">
+                <h2 class="column-title">DATABASE PROJECTS</h2>
+                <div class="admin-table-wrapper">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>NAME</th>
+                        <th>YEAR</th>
+                        <th>ACTIONS</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-projects-list">
+                      <!-- Dynamically rendered -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
