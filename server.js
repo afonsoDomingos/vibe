@@ -34,6 +34,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('Connected to MongoDB successfully.');
     await seedInitialData();
+    await seedInitialServices();
     // Update all existing project colors to #ff3a00 to align with the design theme
     await Project.updateMany({}, { color: '#ff3a00' });
   })
@@ -54,6 +55,14 @@ const projectSchema = new mongoose.Schema({
 
 const Project = mongoose.model('Project', projectSchema);
 
+const serviceSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: { type: String },
+  order: { type: Number, default: 0 }
+}, { timestamps: true });
+
+const Service = mongoose.model('Service', serviceSchema);
+
 // Initial Data Seeding
 async function seedInitialData() {
   try {
@@ -73,6 +82,26 @@ async function seedInitialData() {
     }
   } catch (err) {
     console.error('Error seeding data:', err);
+  }
+}
+
+// Initial Services Seeding
+async function seedInitialServices() {
+  try {
+    const count = await Service.countDocuments();
+    if (count === 0) {
+      console.log('Seeding initial services data...');
+      const initialServices = [
+        { title: 'Desenvolvimento Criativo', description: 'Websites premium e interativos', order: 0 },
+        { title: 'WebGL / Three.js / GLSL', description: 'Experiências e animações em 3D', order: 1 },
+        { title: 'Animações Avançadas de CSS e GSAP', description: 'Micro-interações fluidas', order: 2 },
+        { title: 'Design de Experiência Interativa', description: 'Interfaces modernas e responsivas', order: 3 }
+      ];
+      await Service.insertMany(initialServices);
+      console.log('Initial services seeded successfully.');
+    }
+  } catch (err) {
+    console.error('Error seeding services data:', err);
   }
 }
 
@@ -117,6 +146,71 @@ app.post('/api/auth/login', (req, res) => {
 // Verify Session
 app.get('/api/auth/verify', authenticateToken, (req, res) => {
   res.json({ valid: true, username: req.user.username });
+});
+
+// SERVICES ROUTES
+
+// Fetch all services
+app.get('/api/services', async (req, res) => {
+  try {
+    const services = await Service.find().sort({ order: 1 });
+    res.json(services);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching services.', error: err.message });
+  }
+});
+
+// Create service
+app.post('/api/services', authenticateToken, async (req, res) => {
+  try {
+    const { title, description, order } = req.body;
+    if (!title) {
+      return res.status(400).json({ message: 'Title is required.' });
+    }
+
+    const newService = new Service({
+      title,
+      description: description || '',
+      order: order || 0
+    });
+
+    await newService.save();
+    res.status(201).json(newService);
+  } catch (err) {
+    res.status(500).json({ message: 'Error creating service.', error: err.message });
+  }
+});
+
+// Update service
+app.put('/api/services/:id', authenticateToken, async (req, res) => {
+  try {
+    const { title, description, order } = req.body;
+    const service = await Service.findById(req.params.id);
+
+    if (!service) return res.status(404).json({ message: 'Service not found.' });
+
+    service.title = title || service.title;
+    service.description = description !== undefined ? description : service.description;
+    service.order = order !== undefined ? order : service.order;
+
+    await service.save();
+    res.json(service);
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating service.', error: err.message });
+  }
+});
+
+// Delete service
+app.delete('/api/services/:id', authenticateToken, async (req, res) => {
+  try {
+    const service = await Service.findById(req.params.id);
+    if (!service) return res.status(404).json({ message: 'Service not found.' });
+
+    await Service.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Service deleted successfully.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting service.', error: err.message });
+  }
 });
 
 // Fetch all projects
@@ -263,6 +357,10 @@ app.use((req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+export default app;

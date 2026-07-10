@@ -154,8 +154,8 @@
                 <tr>
                   <th data-i18n="table_year">ANO</th>
                   <th data-i18n="table_project">PROJETO</th>
-                  <th data-i18n="table_role">FUNÇÃO</th>
-                  <th data-i18n="table_tech">TECNOLOGIA</th>
+                  <th class="desktop-only" data-i18n="table_role">FUNÇÃO</th>
+                  <th class="desktop-only" data-i18n="table_tech">TECNOLOGIA</th>
                   <th data-i18n="table_link">LINK</th>
                 </tr>
               </thead>
@@ -199,7 +199,7 @@
               <div class="about-details">
                 <div class="details-section">
                   <h3 class="details-title" data-i18n="about_expertise_title">ESPECIALIDADES</h3>
-                  <ul class="details-list">
+                  <ul class="details-list" id="about-services-list">
                     <li data-i18n="about_exp_1">Desenvolvimento Criativo</li>
                     <li>WebGL / Three.js / GLSL</li>
                     <li data-i18n="about_exp_2">Animações Avançadas de CSS e GSAP</li>
@@ -221,6 +221,11 @@
               <div class="about-footer">
                 <span class="footer-label" data-i18n="about_contact_label">ENTRE EM CONTATO</span>
                 <a href="mailto:hello@vibe.dev" class="contact-email">hello@vibe.dev ↗</a>
+                <div class="contact-phones">
+                  <a href="https://wa.me/258847877405" target="_blank" class="contact-phone">WhatsApp: +258 84 787 7405 ↗</a>
+                  <span class="contact-divider">/</span>
+                  <a href="https://wa.me/258879642412" target="_blank" class="contact-phone">+258 87 964 2412 ↗</a>
+                </div>
               </div>
             </div>
           </div>
@@ -255,12 +260,21 @@
             <div class="dashboard-header">
               <div>
                 <h1 class="admin-card__title" data-i18n="admin_dash_title">CONTROLE DO SISTEMA</h1>
-                <p class="admin-card__subtitle" data-i18n="admin_dash_subtitle">Configurar banco de dados dos projetos do portfólio</p>
+                <p class="admin-card__subtitle" data-i18n="admin_dash_subtitle">Configurar banco de dados do portfólio</p>
               </div>
+
+              <!-- Tab selectors -->
+              <div class="dashboard-nav-tabs">
+                <button id="tab-projects-btn" class="btn-tab active">PROJETOS</button>
+                <button id="tab-services-btn" class="btn-tab">SERVIÇOS</button>
+              </div>
+
               <button id="admin-logout-btn" class="btn-admin-secondary" data-i18n="admin_dash_logout">TERMINATE ACCESS</button>
             </div>
 
-            <div class="dashboard-grid">
+            <!-- PROJECTS TAB CONTENT -->
+            <div id="tab-projects-content" class="dashboard-tab-content active">
+              <div class="dashboard-grid">
               
               <!-- Project creation form -->
               <div class="dashboard-column form-column">
@@ -341,10 +355,69 @@
                       <!-- Dynamically rendered -->
                     </tbody>
                   </table>
-                </div>
               </div>
-
             </div>
+
+            <!-- SERVICES TAB CONTENT -->
+            <div id="tab-services-content" class="dashboard-tab-content">
+              <div class="dashboard-grid">
+                
+                <!-- Service creation form -->
+                <div class="dashboard-column form-column">
+                  <h2 class="column-title" id="service-form-action-title">ADICIONAR NOVO SERVIÇO</h2>
+                  
+                  <form id="service-form" class="admin-form">
+                    <!-- Secret DB ID for edits -->
+                    <input type="hidden" id="service-db-id" />
+                    
+                    <div class="form-group">
+                      <label for="service-title">TÍTULO DO SERVIÇO</label>
+                      <input type="text" id="service-title" placeholder="e.g. Desenvolvimento Criativo" required />
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="service-desc">DESCRIÇÃO (OPCIONAL)</label>
+                      <input type="text" id="service-desc" placeholder="e.g. Criação de sites em 3D e alta performance" />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="service-order">ORDEM DE EXIBIÇÃO</label>
+                      <input type="text" id="service-order" placeholder="e.g. 0" value="0" />
+                    </div>
+
+                    <div class="form-error" id="service-form-error">Ocorreu um erro.</div>
+                    <div class="form-success" id="service-form-success">Serviço salvo com sucesso!</div>
+
+                    <div class="form-actions">
+                      <button type="submit" id="btn-service-save" class="btn-admin-submit">SALVAR NA BASE DE DADOS</button>
+                      <button type="button" id="btn-service-cancel" class="btn-admin-secondary hidden">CANCELAR EDIÇÃO</button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- List of services in DB -->
+                <div class="dashboard-column list-column">
+                  <h2 class="column-title">SERVIÇOS NA BASE DE DADOS</h2>
+                  <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                      <thead>
+                        <tr>
+                          <th>ORDEM</th>
+                          <th>TÍTULO</th>
+                          <th>DESCRIÇÃO</th>
+                          <th>AÇÕES</th>
+                        </tr>
+                      </thead>
+                      <tbody id="admin-services-list">
+                        <!-- Dynamically rendered -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
 
         </div>

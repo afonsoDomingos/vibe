@@ -156,8 +156,10 @@ const TRANSLATIONS = {
 
 // Global Data variables
 let projectsData = [];
+let servicesData = [];
 let currentLang = 'pt';
 const DEFAULT_COLOR = '#ff3a00';
+let editServiceId = null;
 
 // Zoom timers and active selections
 let zoomTimeout = null;
@@ -221,6 +223,42 @@ async function fetchProjects() {
   }
 }
 
+// Fetch Services from API
+async function fetchServices() {
+  try {
+    const response = await fetch('/api/services');
+    if (!response.ok) throw new Error('API server unreachable');
+    servicesData = await response.json();
+  } catch (err) {
+    console.warn('API error, falling back to local services data:', err.message);
+    servicesData = [];
+  }
+}
+
+// Populate Services in About page
+function populateServicesUI() {
+  const list = document.getElementById('about-services-list');
+  if (!list) return;
+
+  list.innerHTML = '';
+  if (servicesData.length === 0) {
+    list.innerHTML = `
+      <li data-i18n="about_exp_1">${TRANSLATIONS[currentLang].about_exp_1 || 'Desenvolvimento Criativo'}</li>
+      <li>WebGL / Three.js / GLSL</li>
+      <li data-i18n="about_exp_2">${TRANSLATIONS[currentLang].about_exp_2 || 'Animações Avançadas de CSS e GSAP'}</li>
+      <li data-i18n="about_exp_3">${TRANSLATIONS[currentLang].about_exp_3 || 'Design de Experiência Interativa'}</li>
+    `;
+    return;
+  }
+
+  servicesData.forEach(service => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${service.title}</strong>${service.description ? ` — ${service.description}` : ''}`;
+    list.appendChild(li);
+  });
+  setupCursorHovers();
+}
+
 // Populate UI (Marquee list & Archive Table)
 function populateUI() {
   // 1. Works Marquee
@@ -256,9 +294,16 @@ function populateUI() {
       
       tr.innerHTML = `
         <td>${project.year}</td>
-        <td class="project-name">${project.name}</td>
-        <td>${project.role}</td>
-        <td>${project.technology}</td>
+        <td class="project-name">
+          ${project.name}
+          <div class="project-mobile-details">
+            <span>${project.role}</span>
+            <span class="divider-dot">•</span>
+            <span>${project.technology}</span>
+          </div>
+        </td>
+        <td class="desktop-only">${project.role}</td>
+        <td class="desktop-only">${project.technology}</td>
         <td><a href="${project.link}" target="_blank" class="archive-link">${TRANSLATIONS[currentLang].table_link_text}</a></td>
       `;
       archiveTableBody.appendChild(tr);
@@ -281,6 +326,7 @@ function initTranslationEngine() {
       localStorage.setItem('vibe_lang', currentLang);
       updateTranslations();
       populateUI(); // Refresh static text links generated in tables
+      populateServicesUI();
       setupMarqueeHoverTriggers();
     });
   }
@@ -896,6 +942,7 @@ async function checkAdminSession() {
     if (res.ok) {
       showCard(dashboardCard);
       loadAdminProjectsList();
+      loadAdminServicesList();
     } else {
       localStorage.removeItem('vibe_jwt');
       showCard(loginCard);
@@ -1166,6 +1213,237 @@ function initProjectForm() {
   });
 }
 
+// SERVICES ADMIN SECTION
+
+async function loadAdminServicesList() {
+  const container = document.getElementById('admin-services-list');
+  if (!container) return;
+
+  try {
+    const res = await fetch('/api/services');
+    const services = await res.json();
+    
+    container.innerHTML = '';
+    if (services.length === 0) {
+      container.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px;">No services in database.</td></tr>`;
+      return;
+    }
+
+    services.forEach(s => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-family: var(--font-mono);">${s.order}</td>
+        <td style="font-weight: 700;">${s.title}</td>
+        <td>${s.description || '-'}</td>
+        <td>
+          <div class="table-actions">
+            <button class="btn-service-edit btn-table-edit" data-id="${s._id}">Edit</button>
+            <button class="btn-service-delete btn-table-delete" data-id="${s._id}">Delete</button>
+          </div>
+        </td>
+      `;
+      container.appendChild(tr);
+    });
+
+    setupCursorHovers();
+    setupAdminServicesActionListeners(services);
+  } catch (err) {
+    container.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#ff3333;padding:20px;">Failed to load services.</td></tr>`;
+  }
+}
+
+function setupAdminServicesActionListeners(services) {
+  const editBtns = document.querySelectorAll('.btn-service-edit');
+  editBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-id');
+      const service = services.find(s => s._id === id);
+      if (service) {
+        startServiceEditMode(service);
+      }
+    });
+  });
+
+  const deleteBtns = document.querySelectorAll('.btn-service-delete');
+  deleteBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      if (confirm('Are you sure you want to delete this service?')) {
+        const token = localStorage.getItem('vibe_jwt');
+        try {
+          const res = await fetch(`/api/services/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            await fetchServices();
+            populateServicesUI();
+            loadAdminServicesList();
+          } else {
+            const data = await res.json();
+            alert('Failed to delete: ' + data.message);
+          }
+        } catch (err) {
+          alert('Error communicating with server.');
+        }
+      }
+    });
+  });
+}
+
+function startServiceEditMode(service) {
+  editServiceId = service._id;
+  
+  document.getElementById('service-form-action-title').textContent = 'EDITAR SERVIÇO';
+  document.getElementById('btn-service-save').textContent = 'ATUALIZAR BASE DE DADOS';
+  document.getElementById('btn-service-cancel').classList.remove('hidden');
+
+  document.getElementById('service-db-id').value = service._id;
+  document.getElementById('service-title').value = service.title;
+  document.getElementById('service-desc').value = service.description || '';
+  document.getElementById('service-order').value = service.order !== undefined ? service.order : 0;
+}
+
+function stopServiceEditMode() {
+  editServiceId = null;
+  
+  document.getElementById('service-form-action-title').textContent = 'ADICIONAR NOVO SERVIÇO';
+  document.getElementById('btn-service-save').textContent = 'SALVAR NA BASE DE DADOS';
+  document.getElementById('btn-service-cancel').classList.add('hidden');
+
+  document.getElementById('service-form').reset();
+  document.getElementById('service-db-id').value = '';
+  document.getElementById('service-order').value = '0';
+}
+
+function initServiceForm() {
+  const form = document.getElementById('service-form');
+  const cancelBtn = document.getElementById('btn-service-cancel');
+  const errorText = document.getElementById('service-form-error');
+  const successText = document.getElementById('service-form-success');
+
+  if (!form) return;
+
+  cancelBtn.addEventListener('click', stopServiceEditMode);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorText.style.display = 'none';
+    successText.style.display = 'none';
+
+    const token = localStorage.getItem('vibe_jwt');
+    if (!token) {
+      errorText.textContent = 'Unauthorized access. Please log in again.';
+      errorText.style.display = 'block';
+      return;
+    }
+
+    const payload = {
+      title: document.getElementById('service-title').value,
+      description: document.getElementById('service-desc').value,
+      order: parseInt(document.getElementById('service-order').value, 10) || 0
+    };
+
+    const method = editServiceId ? 'PUT' : 'POST';
+    const endpoint = editServiceId ? `/api/services/${editServiceId}` : '/api/services';
+
+    const submitBtn = document.getElementById('btn-service-save');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'SAVING...';
+
+    try {
+      const res = await fetch(endpoint, {
+        method: method,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        successText.textContent = 'Serviço salvo com sucesso!';
+        successText.style.display = 'block';
+        
+        stopServiceEditMode();
+        
+        await fetchServices();
+        populateServicesUI();
+        loadAdminServicesList();
+      } else {
+        errorText.textContent = data.message || 'Error occurred during submit.';
+        errorText.style.display = 'block';
+      }
+    } catch (err) {
+      errorText.textContent = 'Network communication error.';
+      errorText.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+    }
+  });
+}
+
+function initAdminTabs() {
+  const projBtn = document.getElementById('tab-projects-btn');
+  const servBtn = document.getElementById('tab-services-btn');
+  const projContent = document.getElementById('tab-projects-content');
+  const servContent = document.getElementById('tab-services-content');
+
+  if (!projBtn || !servBtn) return;
+
+  projBtn.addEventListener('click', () => {
+    projBtn.classList.add('active');
+    servBtn.classList.remove('active');
+    projContent.classList.add('active');
+    servContent.classList.remove('active');
+    loadAdminProjectsList();
+    setupCursorHovers();
+  });
+
+  servBtn.addEventListener('click', () => {
+    servBtn.classList.add('active');
+    projBtn.classList.remove('active');
+    servContent.classList.add('active');
+    projContent.classList.remove('active');
+    loadAdminServicesList();
+    setupCursorHovers();
+  });
+}
+
+function initMobileMenu() {
+  const hamburgerBtn = document.querySelector('.hamburger-btn');
+  const header = document.querySelector('.header');
+  const navLinks = document.querySelectorAll('.nav-link, .logo__link');
+
+  if (!hamburgerBtn || !header) return;
+
+  hamburgerBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    hamburgerBtn.classList.toggle('active');
+    header.classList.toggle('menu-active');
+  });
+
+  // Close menu when clicking a nav link
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      hamburgerBtn.classList.remove('active');
+      header.classList.remove('menu-active');
+    });
+  });
+
+  // Close menu when clicking outside of header
+  document.addEventListener('click', (e) => {
+    if (header.classList.contains('menu-active') && !header.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+      hamburgerBtn.classList.remove('active');
+      header.classList.remove('menu-active');
+    }
+  });
+}
+
 /* ==========================================
    INITIALIZATION
    ========================================== */
@@ -1174,7 +1452,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   initTranslationEngine();
 
   await fetchProjects();
+  await fetchServices();
   populateUI();
+  populateServicesUI();
 
   lenis = new Lenis({
     duration: 1.2,
@@ -1191,12 +1471,15 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Initialize UI features
   initPreloader();
   initNavigation();
+  initMobileMenu();
   initGridHelper();
   initAvailability();
   
   // Admin logic
   initAdminAuth();
+  initAdminTabs();
   initProjectForm();
+  initServiceForm();
 
   // Overlay controller logic
   initOverlayControls();
