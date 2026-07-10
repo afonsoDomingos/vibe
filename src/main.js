@@ -2,8 +2,153 @@ import * as THREE from 'three';
 import { gsap } from 'gsap';
 import Lenis from 'lenis';
 
+// Translations Dictionary
+const TRANSLATIONS = {
+  pt: {
+    doc_title: "VIBE — Portfólio de Desenvolvedor Criativo",
+    preload_subtitle: "INICIALIZANDO ESPAÇO DE TRABALHO",
+    preload_status: "CARREGANDO COMPONENTES_SISTEMA",
+    cursor_label: "VER",
+    nav_works: "Trabalhos em Destaque",
+    nav_archive: "Arquivo",
+    nav_about: "Sobre",
+    nav_admin: "Admin",
+    btn_dimensions: "Dimensões",
+    badge_available: "Disponível Set. 2026",
+    email_tooltip: "Clique para copiar o email",
+    sidebar_creator: "CRIADOR",
+    sidebar_role: "Desenvolvedor Criativo",
+    sidebar_collection: "COLEÇÃO",
+    sidebar_issue: "Edição N°003 / Col. 2026",
+    canvas_instruction: "ARRASTE PARA ROTACIONAR • CLIQUE NAS IMAGENS PARA EXPLORAR",
+    status_loading: "Carregando...",
+    archive_title: "ARQUIVO",
+    table_year: "ANO",
+    table_project: "PROJETO",
+    table_role: "FUNÇÃO",
+    table_tech: "TECNOLOGIA",
+    table_link: "LINK",
+    table_link_text: "Explorar ↗",
+    status_loading_projects: "Carregando projetos...",
+    about_subtitle: "SOBRE O CRIATIVO",
+    about_tagline: "Criando experiências interativas de alta fidelidade e focadas em animação.",
+    about_bio_1: "Como desenvolvedor criativo independente, foco em aproximar o design e a engenharia. Ao utilizar animações avançadas, cenas 3D em WebGL e layouts rígidos no estilo suíço, crio experiências digitais que deixam uma marca duradoura.",
+    about_bio_2: "Através de grelhas disciplinadas, hierarquia tipográfica e interações físicas responsivas, o meu trabalho procura ser premium, leve e interativo.",
+    about_expertise_title: "ESPECIALIDADES",
+    about_exp_1: "Desenvolvimento Criativo",
+    about_exp_2: "Animações Avançadas de CSS e GSAP",
+    about_exp_3: "Design de Experiência Interativa",
+    about_awards_title: "PRÊMIOS & RECONHECIMENTOS",
+    about_award_1: "Awwwards Site do Dia (2026)",
+    about_award_2: "Prêmio de Desenvolvedor (Nota 7.53)",
+    about_contact_label: "ENTRE EM CONTATO",
+    admin_login_title: "AUTENTICAR SISTEMA",
+    admin_login_subtitle: "Acesso ao Espaço de Trabalho do Administrador VIBE",
+    admin_login_user_label: "ID DO SISTEMA",
+    admin_login_pass_label: "SENHA DE ACESSO",
+    admin_login_error: "Credenciais do Sistema Inválidas.",
+    admin_login_btn: "INICIALIZAR ACESSO",
+    admin_dash_title: "CONTROLE DO SISTEMA",
+    admin_dash_subtitle: "Configurar banco de dados dos projetos do portfólio",
+    admin_dash_logout: "TERMINAR ACESSO",
+    admin_form_title_add: "ADICIONAR NOVO PORTFÓLIO",
+    admin_form_title_edit: "EDITAR PORTFÓLIO",
+    admin_form_name: "NOME DO PROJETO",
+    admin_form_slug: "SLUG DA URL",
+    admin_form_year: "ANO",
+    admin_form_color: "COR DE DESTAQUE",
+    admin_form_role: "FUNÇÃO DE DESENVOLVIMENTO",
+    admin_form_tech: "TECNOLOGIAS USADAS",
+    admin_form_link: "LINK EXTERNO",
+    admin_form_image: "ARQUIVO DE IMAGEM DE CAPA (MÁX 5MB)",
+    admin_form_image_help: "Selecione uma imagem de capa JPG/PNG",
+    admin_form_btn_commit: "SALVAR NA BASE DE DADOS",
+    admin_form_btn_update: "ATUALIZAR BASE DE DADOS",
+    admin_form_btn_cancel: "CANCELAR EDIÇÃO",
+    admin_table_title: "PROJETOS NA BASE DE DADOS",
+    admin_table_header_name: "NOME",
+    admin_table_header_year: "ANO",
+    admin_table_header_actions: "AÇÕES",
+    admin_form_error_generic: "Ocorreu um erro.",
+    admin_form_success_generic: "Projeto salvo com sucesso!",
+    email_copied_msg: "Email copiado!",
+    click_copy_msg: "Clique para copiar o email"
+  },
+  en: {
+    doc_title: "VIBE — Creative Developer Portfolio",
+    preload_subtitle: "INITIALIZING WORKSPACE",
+    preload_status: "LOADING SYSTEM_ASSETS",
+    cursor_label: "VIEW",
+    nav_works: "Featured Works",
+    nav_archive: "Archive",
+    nav_about: "About",
+    nav_admin: "Admin",
+    btn_dimensions: "Dimensions",
+    badge_available: "Available Sept. 2026",
+    email_tooltip: "Click to copy email",
+    sidebar_creator: "CREATOR",
+    sidebar_role: "Creative Developer",
+    sidebar_collection: "COLLECTION",
+    sidebar_issue: "Issue N°003 / Coll. 2026",
+    canvas_instruction: "DRAG TO ROTATE • CLICK IMAGES TO EXPLORE",
+    status_loading: "Loading...",
+    archive_title: "ARCHIVE",
+    table_year: "YEAR",
+    table_project: "PROJECT",
+    table_role: "ROLE",
+    table_tech: "TECHNOLOGY",
+    table_link: "LINK",
+    table_link_text: "Explore ↗",
+    status_loading_projects: "Loading projects...",
+    about_subtitle: "ABOUT THE CREATIVE",
+    about_tagline: "Crafting high-fidelity, animation-driven interactive experiences.",
+    about_bio_1: "As an independent creative developer, I focus on bridging the gap between design and engineering. By utilizing advanced animations, 3D WebGL scenes, and strict Swiss layouts, I create digital experiences that leave a lasting impression.",
+    about_bio_2: "Through disciplined grids, typographic hierarchy, and responsive physical interactions, my work aims to feel premium, lightweight, and interactive.",
+    about_expertise_title: "EXPERTISE",
+    about_exp_1: "Creative Development",
+    about_exp_2: "Advanced CSS & GSAP Animations",
+    about_exp_3: "Interactive Experience Design",
+    about_awards_title: "AWARDS & RECOGNITIONS",
+    about_award_1: "Awwwards Site of the Day (2026)",
+    about_award_2: "Developer Award (Score 7.53)",
+    about_contact_label: "GET IN TOUCH",
+    admin_login_title: "AUTHENTICATE SYSTEM",
+    admin_login_subtitle: "VIBE Admin Workspace Access",
+    admin_login_user_label: "SYSTEM ID",
+    admin_login_pass_label: "ACCESS PASSWORD",
+    admin_login_error: "Invalid System Credentials.",
+    admin_login_btn: "INITIALIZE ACCESS",
+    admin_dash_title: "SYSTEM CONTROL",
+    admin_dash_subtitle: "Configure portfolio projects databases",
+    admin_dash_logout: "TERMINATE ACCESS",
+    admin_form_title_add: "ADD NEW PORTFOLIO",
+    admin_form_title_edit: "EDIT PORTFOLIO",
+    admin_form_name: "PROJECT NAME",
+    admin_form_slug: "URL SLUG",
+    admin_form_year: "YEAR",
+    admin_form_color: "ACCENT COLOR",
+    admin_form_role: "DEVELOPMENT ROLE",
+    admin_form_tech: "TECHNOLOGY STACK",
+    admin_form_link: "EXTERNAL LINK",
+    admin_form_image: "IMAGE COVER FILE (MAX 5MB)",
+    admin_form_image_help: "Select a JPG/PNG image cover",
+    admin_form_btn_commit: "COMMIT TO DATABASE",
+    admin_form_btn_update: "UPDATE DATABASE",
+    admin_form_btn_cancel: "CANCEL EDIT",
+    admin_table_title: "DATABASE PROJECTS",
+    admin_table_header_name: "NAME",
+    admin_table_header_year: "YEAR",
+    admin_table_header_actions: "ACTIONS",
+    admin_form_error_generic: "An error occurred.",
+    admin_form_success_generic: "Project saved successfully!",
+    email_copied_msg: "Email copied!",
+    click_copy_msg: "Click to copy email"
+  }
+};
+
 // Global Data variables
 let projectsData = [];
+let currentLang = 'pt';
 const DEFAULT_COLOR = '#ff3a00';
 
 // fallback local mock data in case API fails
@@ -70,7 +215,6 @@ function populateUI() {
   const worksListUl = document.getElementById('works-list-ul');
   if (worksListUl) {
     worksListUl.innerHTML = '';
-    // Double list for seamless marquee scroll loop
     const repeatCount = projectsData.length < 4 ? 3 : 2;
     for (let loop = 0; loop < repeatCount; loop++) {
       projectsData.forEach((project, index) => {
@@ -103,13 +247,55 @@ function populateUI() {
         <td class="project-name">${project.name}</td>
         <td>${project.role}</td>
         <td>${project.technology}</td>
-        <td><a href="${project.link}" target="_blank" class="archive-link">Explore ↗</a></td>
+        <td><a href="${project.link}" target="_blank" class="archive-link">${TRANSLATIONS[currentLang].table_link_text}</a></td>
       `;
       archiveTableBody.appendChild(tr);
     });
   }
 
   setupCursorHovers();
+}
+
+// Language Switcher Logic
+function initTranslationEngine() {
+  const langToggle = document.getElementById('lang-toggle');
+  const langToggleText = document.getElementById('lang-toggle-text');
+
+  // Read saved language preference, default to Portuguese (pt)
+  currentLang = localStorage.getItem('vibe_lang') || 'pt';
+  updateTranslations();
+
+  if (langToggle) {
+    langToggle.addEventListener('click', () => {
+      currentLang = currentLang === 'pt' ? 'en' : 'pt';
+      localStorage.setItem('vibe_lang', currentLang);
+      updateTranslations();
+      populateUI(); // Refresh static text links generated in tables
+      setupMarqueeHoverTriggers();
+    });
+  }
+}
+
+function updateTranslations() {
+  const langToggleText = document.getElementById('lang-toggle-text');
+  if (langToggleText) {
+    // Show the target language on the button
+    langToggleText.textContent = currentLang === 'pt' ? 'EN' : 'PT';
+  }
+
+  const elements = document.querySelectorAll('[data-i18n]');
+  elements.forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const translation = TRANSLATIONS[currentLang][key];
+    
+    if (translation) {
+      if (el.tagName === 'TITLE') {
+        document.title = translation;
+      } else {
+        el.textContent = translation;
+      }
+    }
+  });
 }
 
 // Preloader Progress
@@ -231,7 +417,6 @@ function initNavigation() {
 
       activeSection = target;
       
-      // Load admin list if admin section is open
       if (target === 'admin') {
         checkAdminSession();
       }
@@ -239,7 +424,7 @@ function initNavigation() {
   });
 }
 
-// Dimensions / Composition Grid (Alt+G)
+// Dimensions Helper (Alt+G)
 function initGridHelper() {
   const gridHelper = document.getElementById('grid-helper');
   const gridToggleBtn = document.getElementById('grid-toggle');
@@ -251,7 +436,9 @@ function initGridHelper() {
     gridToggleBtn.classList.toggle('active', isGridActive);
   }
 
-  gridToggleBtn.addEventListener('click', toggleGrid);
+  if (gridToggleBtn) {
+    gridToggleBtn.addEventListener('click', toggleGrid);
+  }
   
   window.addEventListener('keydown', (e) => {
     if (e.altKey && (e.key === 'g' || e.key === 'G')) {
@@ -287,11 +474,11 @@ function initAvailability() {
     badge.addEventListener('click', () => {
       navigator.clipboard.writeText(email).then(() => {
         badge.classList.add('copied');
-        tooltip.textContent = 'Email copied!';
+        tooltip.textContent = TRANSLATIONS[currentLang].email_copied_msg;
         
         setTimeout(() => {
           badge.classList.remove('copied');
-          tooltip.textContent = 'Click to copy email';
+          tooltip.textContent = TRANSLATIONS[currentLang].click_copy_msg;
         }, 2000);
       });
     });
@@ -311,14 +498,11 @@ function initThreeCanvas() {
   const canvas = document.getElementById('cube-canvas');
   if (!container || !canvas) return;
 
-  // Scene
   scene = new THREE.Scene();
   
-  // Camera
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
   camera.position.z = 5.2;
 
-  // Renderer
   renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     alpha: true,
@@ -327,14 +511,11 @@ function initThreeCanvas() {
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // Build Cube panels
   buildThreeCubeGroup();
 
-  // Mouse Raycaster
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
-  // Drag controls
   let isDragging = false;
   let previousMousePosition = { x: 0, y: 0 };
   let targetRotationX = -0.3;
@@ -381,7 +562,6 @@ function initThreeCanvas() {
     });
   };
 
-  // Touch triggers
   canvas.addEventListener('mousedown', onPointerDown);
   window.addEventListener('mousemove', onPointerMove);
   window.addEventListener('mouseup', onPointerUp);
@@ -394,7 +574,6 @@ function initThreeCanvas() {
   }, { passive: true });
   window.addEventListener('touchend', onPointerUp);
 
-  // Click handler (Raycast Zoom)
   canvas.addEventListener('click', () => {
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(panels);
@@ -428,7 +607,6 @@ function initThreeCanvas() {
     });
   }
 
-  // Resize handler
   window.addEventListener('resize', () => {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
@@ -437,7 +615,6 @@ function initThreeCanvas() {
 
   let currentHoveredPanel = null;
 
-  // Animation ticks
   function animate() {
     requestAnimationFrame(animate);
 
@@ -512,7 +689,6 @@ function initThreeCanvas() {
 function buildThreeCubeGroup() {
   if (!scene) return;
 
-  // Clear previous group
   if (cubeGroup) {
     scene.remove(cubeGroup);
     panels.forEach(p => {
@@ -522,7 +698,6 @@ function buildThreeCubeGroup() {
     panels = [];
   }
 
-  // Pre-load textures for current projects
   textures = projectsData.map(p => textureLoader.load(p.image));
 
   cubeGroup = new THREE.Group();
@@ -546,7 +721,6 @@ function buildThreeCubeGroup() {
         const yLocal = r * 0.62;
         const zLocal = 0.95;
 
-        // Select texture
         const projectIndex = Math.abs((faceIndex * 3 + r + c + 10) % projectsData.length);
         const texture = textures[projectIndex];
 
@@ -577,11 +751,9 @@ function buildThreeCubeGroup() {
     }
   });
 
-  // Re-link list hover listeners to the new panels
   setupMarqueeHoverTriggers();
 }
 
-// Link list hover triggers to 3D Cube panels
 function setupMarqueeHoverTriggers() {
   const marqueeLinks = document.querySelectorAll('.marquee-link');
   marqueeLinks.forEach(link => {
@@ -615,9 +787,8 @@ function setupMarqueeHoverTriggers() {
    ADMIN PANEL BACKEND LOGIC & ACTIONS
    ========================================== */
 
-let editProjectId = null; // Track database ID during edits
+let editProjectId = null;
 
-// Check if JWT session is active
 async function checkAdminSession() {
   const token = localStorage.getItem('vibe_jwt');
   const loginCard = document.getElementById('admin-login-card');
@@ -641,7 +812,6 @@ async function checkAdminSession() {
       showCard(loginCard);
     }
   } catch (err) {
-    // If API error, fallback to login card
     showCard(loginCard);
   }
 }
@@ -653,7 +823,6 @@ function showCard(cardElement) {
   setupCursorHovers();
 }
 
-// Handle Admin login form
 function initAdminAuth() {
   const loginForm = document.getElementById('admin-login-form');
   const errorText = document.getElementById('login-error');
@@ -679,7 +848,7 @@ function initAdminAuth() {
         loginForm.reset();
         checkAdminSession();
       } else {
-        errorText.textContent = data.message || 'Login failed.';
+        errorText.textContent = TRANSLATIONS[currentLang].admin_login_error;
         errorText.style.display = 'block';
       }
     } catch (err) {
@@ -688,7 +857,6 @@ function initAdminAuth() {
     }
   });
 
-  // Logout button
   const logoutBtn = document.getElementById('admin-logout-btn');
   logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('vibe_jwt');
@@ -696,7 +864,6 @@ function initAdminAuth() {
   });
 }
 
-// Load project lists for Admin dashboard
 async function loadAdminProjectsList() {
   const container = document.getElementById('admin-projects-list');
   if (!container) return;
@@ -733,9 +900,7 @@ async function loadAdminProjectsList() {
   }
 }
 
-// Connect Edit and Delete buttons inside the admin list
 function setupAdminActionListeners(projects) {
-  // Edit Trigger
   const editBtns = document.querySelectorAll('.btn-table-edit');
   editBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -747,12 +912,11 @@ function setupAdminActionListeners(projects) {
     });
   });
 
-  // Delete Trigger
   const deleteBtns = document.querySelectorAll('.btn-table-delete');
   deleteBtns.forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = btn.getAttribute('data-id');
-      if (confirm('Are you sure you want to delete this project? This will delete the metadata from MongoDB and the asset from Cloudinary.')) {
+      if (confirm('Are you sure you want to delete this project?')) {
         const token = localStorage.getItem('vibe_jwt');
         try {
           const res = await fetch(`/api/projects/${id}`, {
@@ -760,10 +924,10 @@ function setupAdminActionListeners(projects) {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           if (res.ok) {
-            await fetchProjects(); // refresh global data
-            populateUI();          // refresh index views
-            buildThreeCubeGroup(); // rebuild cube
-            loadAdminProjectsList(); // refresh dashboard table
+            await fetchProjects();
+            populateUI();
+            buildThreeCubeGroup();
+            loadAdminProjectsList();
           } else {
             const data = await res.json();
             alert('Failed to delete: ' + data.message);
@@ -776,17 +940,16 @@ function setupAdminActionListeners(projects) {
   });
 }
 
-// Start Edit Mode in form
 function startEditMode(project) {
   editProjectId = project._id;
   
-  document.getElementById('form-action-title').textContent = 'EDIT PORTFOLIO';
-  document.getElementById('btn-project-save').textContent = 'UPDATE DATABASE';
+  document.getElementById('form-action-title').textContent = TRANSLATIONS[currentLang].admin_form_title_edit;
+  document.getElementById('btn-project-save').textContent = TRANSLATIONS[currentLang].admin_form_btn_update;
+  document.getElementById('btn-project-cancel').textContent = TRANSLATIONS[currentLang].admin_form_btn_cancel;
   document.getElementById('btn-project-cancel').classList.remove('hidden');
-  document.getElementById('image-input-label').textContent = 'CHANGE IMAGE COVER (OPTIONAL)';
-  document.getElementById('file-help-text').textContent = 'Leave empty to keep current image';
+  document.getElementById('image-input-label').textContent = currentLang === 'pt' ? 'ALTERAR IMAGEM DE CAPA (OPCIONAL)' : 'CHANGE IMAGE COVER (OPTIONAL)';
+  document.getElementById('file-help-text').textContent = currentLang === 'pt' ? 'Deixe vazio para manter a imagem atual' : 'Leave empty to keep current image';
 
-  // Fill inputs
   document.getElementById('project-db-id').value = project._id;
   document.getElementById('project-name').value = project.name;
   document.getElementById('project-slug').value = project.slug;
@@ -798,15 +961,14 @@ function startEditMode(project) {
   document.getElementById('project-link').value = project.link;
 }
 
-// Stop Edit Mode
 function stopEditMode() {
   editProjectId = null;
   
-  document.getElementById('form-action-title').textContent = 'ADD NEW PORTFOLIO';
-  document.getElementById('btn-project-save').textContent = 'COMMIT TO DATABASE';
+  document.getElementById('form-action-title').textContent = TRANSLATIONS[currentLang].admin_form_title_add;
+  document.getElementById('btn-project-save').textContent = TRANSLATIONS[currentLang].admin_form_btn_commit;
   document.getElementById('btn-project-cancel').classList.add('hidden');
-  document.getElementById('image-input-label').textContent = 'IMAGE COVER FILE (MAX 5MB)';
-  document.getElementById('file-help-text').textContent = 'Select a JPG/PNG image cover';
+  document.getElementById('image-input-label').textContent = TRANSLATIONS[currentLang].admin_form_image;
+  document.getElementById('file-help-text').textContent = TRANSLATIONS[currentLang].admin_form_image_help;
 
   document.getElementById('project-form').reset();
   document.getElementById('project-db-id').value = '';
@@ -814,7 +976,6 @@ function stopEditMode() {
   document.getElementById('project-color-text').value = DEFAULT_COLOR;
 }
 
-// Setup Project Upload / Edit Form Actions
 function initProjectForm() {
   const form = document.getElementById('project-form');
   const cancelBtn = document.getElementById('btn-project-cancel');
@@ -825,10 +986,8 @@ function initProjectForm() {
   const colorPicker = document.getElementById('project-color');
   const colorText = document.getElementById('project-color-text');
 
-  // Cancel button
   cancelBtn.addEventListener('click', stopEditMode);
 
-  // Sync color picker with text box
   colorPicker.addEventListener('input', () => {
     colorText.value = colorPicker.value;
   });
@@ -838,7 +997,6 @@ function initProjectForm() {
     }
   });
 
-  // Auto-generate slug from project name
   nameInput.addEventListener('input', () => {
     if (!editProjectId) {
       slugInput.value = nameInput.value
@@ -848,7 +1006,6 @@ function initProjectForm() {
     }
   });
 
-  // Submit Handler (Add / Edit)
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorText.style.display = 'none';
@@ -882,11 +1039,10 @@ function initProjectForm() {
     const method = editProjectId ? 'PUT' : 'POST';
     const endpoint = editProjectId ? `/api/projects/${editProjectId}` : '/api/projects';
 
-    // Disable button during submit to prevent multiple clicks
     const submitBtn = document.getElementById('btn-project-save');
     const originalBtnText = submitBtn.textContent;
     submitBtn.disabled = true;
-    submitBtn.textContent = editProjectId ? 'UPDATING CLOUDINARY...' : 'UPLOADING TO DATABASE...';
+    submitBtn.textContent = editProjectId ? 'UPDATING...' : 'UPLOADING...';
 
     try {
       const res = await fetch(endpoint, {
@@ -898,15 +1054,15 @@ function initProjectForm() {
       const data = await res.json();
 
       if (res.ok) {
-        successText.textContent = editProjectId ? 'Project updated successfully.' : 'Project added to database.';
+        successText.textContent = TRANSLATIONS[currentLang].admin_form_success_generic;
         successText.style.display = 'block';
         
         stopEditMode();
         
-        await fetchProjects();    // refresh global dataset
-        populateUI();             // populate front views
-        buildThreeCubeGroup();    // rebuild 3D scenes
-        loadAdminProjectsList();  // update dashboard list
+        await fetchProjects();
+        populateUI();
+        buildThreeCubeGroup();
+        loadAdminProjectsList();
       } else {
         errorText.textContent = data.message || 'Error occurred during submit.';
         errorText.style.display = 'block';
@@ -926,6 +1082,9 @@ function initProjectForm() {
    ========================================== */
 
 window.addEventListener('DOMContentLoaded', async () => {
+  // Init translations before fetching/populating to ensure proper link elements are generated
+  initTranslationEngine();
+
   // Fetch from DB and build dynamic interface
   await fetchProjects();
   populateUI();

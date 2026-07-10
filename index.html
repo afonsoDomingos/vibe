@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VIBE — Creative Developer Portfolio</title>
+    <title data-i18n="doc_title">VIBE — Portfólio de Desenvolvedor Criativo</title>
     <!-- Fonts: Outfit (modern sans-serif) & DM Mono (monospace metadata) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,13 +14,13 @@
     <!-- Preloader Screen -->
     <div id="preloader" class="preloader">
       <div class="preloader__inner">
-        <span class="preloader__subtitle">INITIALIZING WORKSPACE</span>
+        <span class="preloader__subtitle" data-i18n="preload_subtitle">INICIALIZANDO ESPAÇO DE TRABALHO</span>
         <div class="preloader__progress">
           <div id="preloader-bar" class="preloader__bar"></div>
         </div>
         <div class="preloader__meta">
           <span id="preloader-percentage" class="preloader__percentage">00%</span>
-          <span class="preloader__status">LOADING SYSTEM_ASSETS</span>
+          <span class="preloader__status" data-i18n="preload_status">CARREGANDO COMPONENTES_SISTEMA</span>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
     <div id="custom-cursor" class="custom-cursor">
       <div class="custom-cursor__dot"></div>
       <div class="custom-cursor__ring"></div>
-      <div class="custom-cursor__label">VIEW</div>
+      <div class="custom-cursor__label" data-i18n="cursor_label">VER</div>
     </div>
 
     <!-- Layout Grid Lines (Alt+G Toggle) -->
@@ -71,21 +71,25 @@
         </div>
         
         <nav class="navigation">
-          <button data-section="works" class="nav-link active">Featured Works</button>
-          <button data-section="archive" class="nav-link">Archive</button>
-          <button data-section="about" class="nav-link">About</button>
-          <button data-section="admin" class="nav-link">Admin</button>
+          <button data-section="works" class="nav-link active" data-i18n="nav_works">Trabalhos em Destaque</button>
+          <button data-section="archive" class="nav-link" data-i18n="nav_archive">Arquivo</button>
+          <button data-section="about" class="nav-link" data-i18n="nav_about">Sobre</button>
+          <button data-section="admin" class="nav-link" data-i18n="nav_admin">Admin</button>
         </nav>
 
         <div class="header-actions">
+          <button id="lang-toggle" class="btn-grid" aria-label="Alterar idioma (Switch language)">
+            <span id="lang-toggle-text">EN</span>
+          </button>
+
           <button id="grid-toggle" class="btn-grid" aria-label="Toggle composition grid (Alt+G)">
-            <span class="btn-grid__text">Dimensions</span>
+            <span class="btn-grid__text" data-i18n="btn_dimensions">Dimensões</span>
           </button>
           
           <div class="availability" id="availability-badge">
             <span class="availability__square"></span>
-            <span class="availability__text">Available Sept. 2026</span>
-            <div class="availability__tooltip" id="email-tooltip">Click to copy email</div>
+            <span class="availability__text" data-i18n="badge_available">Disponível Set. 2026</span>
+            <div class="availability__tooltip" id="email-tooltip" data-i18n="email_tooltip">Clique para copiar o email</div>
           </div>
         </div>
       </div>
@@ -106,13 +110,13 @@
             
             <div class="dev-info">
               <div class="dev-info__meta">
-                <span class="label">CREATOR</span>
+                <span class="label" data-i18n="sidebar_creator">CRIADOR</span>
                 <h2 class="value">Vibe</h2>
-                <span class="value-sub">Creative Developer</span>
+                <span class="value-sub" data-i18n="sidebar_role">Desenvolvedor Criativo</span>
               </div>
               <div class="dev-info__meta">
-                <span class="label">COLLECTION</span>
-                <span class="value">Issue N°003 / Coll. 2026</span>
+                <span class="label" data-i18n="sidebar_collection">COLEÇÃO</span>
+                <span class="value" data-i18n="sidebar_issue">Edição N°003 / Col. 2026</span>
                 <span class="value-sub">Ref. EDI-032026-R02</span>
               </div>
             </div>
@@ -121,7 +125,7 @@
           <!-- Central 3D Canvas Box -->
           <div class="canvas-container" id="canvas-container">
             <canvas id="cube-canvas"></canvas>
-            <div class="canvas-instruction">DRAG TO ROTATE • CLICK IMAGES TO EXPLORE</div>
+            <div class="canvas-instruction" data-i18n="canvas_instruction">ARRASTE PARA ROTACIONAR • CLIQUE NAS IMAGENS PARA EXPLORAR</div>
           </div>
 
           <!-- Right side infinite vertical scroll lists -->
@@ -129,8 +133,7 @@
             <div class="works-marquee-wrapper">
               <div class="works-marquee" id="marquee-1">
                 <ul class="works-marquee__list" id="works-list-ul">
-                  <!-- Will be loaded dynamically from DB -->
-                  <li class="marquee-item"><span class="marquee-link">Loading...</span></li>
+                  <li class="marquee-item"><span class="marquee-link" data-i18n="status_loading">Carregando...</span></li>
                 </ul>
               </div>
             </div>
@@ -141,22 +144,21 @@
       <!-- VIEW: ARCHIVE -->
       <section id="section-archive" class="section-view">
         <div class="archive-container">
-          <h1 class="archive-title">ARCHIVE</h1>
+          <h1 class="archive-title" data-i18n="archive_title">ARQUIVO</h1>
           <div class="archive-table-wrapper">
             <table class="archive-table">
               <thead>
                 <tr>
-                  <th>YEAR</th>
-                  <th>PROJECT</th>
-                  <th>ROLE</th>
-                  <th>TECHNOLOGY</th>
-                  <th>LINK</th>
+                  <th data-i18n="table_year">ANO</th>
+                  <th data-i18n="table_project">PROJETO</th>
+                  <th data-i18n="table_role">FUNÇÃO</th>
+                  <th data-i18n="table_tech">TECNOLOGIA</th>
+                  <th data-i18n="table_link">LINK</th>
                 </tr>
               </thead>
               <tbody id="archive-table-body">
-                <!-- Loaded dynamically from DB -->
                 <tr>
-                  <td colspan="5" style="text-align: center; padding: 40px 0; font-family: var(--font-mono); color: var(--text-muted);">Loading projects...</td>
+                  <td colspan="5" style="text-align: center; padding: 40px 0; font-family: var(--font-mono); color: var(--text-muted);" data-i18n="status_loading_projects">Carregando projetos...</td>
                 </tr>
               </tbody>
             </table>
@@ -170,51 +172,51 @@
           <div class="about-grid">
             <div class="about-image-column">
               <div class="about-image-wrapper">
-                <img id="about-portrait" src="/images/moving-portraits.png" alt="Vibe Portrait" class="about-portrait-img" />
+                <img id="about-portrait" src="/images/vibe_author.png" alt="Vibe Portrait" class="about-portrait-img" />
                 <div class="about-image-overlay">VIBE // STUDIO</div>
               </div>
             </div>
             
             <div class="about-text-column">
               <div class="about-header">
-                <span class="subtitle">ABOUT THE CREATIVE</span>
+                <span class="subtitle" data-i18n="about_subtitle">SOBRE O CRIATIVO</span>
                 <h1 class="about-title">VIBE</h1>
-                <p class="tagline">Crafting high-fidelity, animation-driven interactive experiences.</p>
+                <p class="tagline" data-i18n="about_tagline">Criando experiências interativas de alta fidelidade e focadas em animação.</p>
               </div>
 
               <div class="about-bio">
-                <p>
-                  As an independent creative developer, I focus on bridging the gap between design and engineering. By utilizing advanced animations, 3D WebGL scenes, and strict Swiss layouts, I create digital experiences that leave a lasting impression.
+                <p data-i18n="about_bio_1">
+                  Como desenvolvedor criativo independente, foco em aproximar o design e a engenharia. Ao utilizar animações avançadas, cenas 3D em WebGL e layouts rígidos no estilo suíço, crio experiências digitais que deixam uma marca duradoura.
                 </p>
-                <p>
-                  Through disciplined grids, typographic hierarchy, and responsive physical interactions, my work aims to feel premium, lightweight, and interactive.
+                <p data-i18n="about_bio_2">
+                  Através de grelhas disciplinadas, hierarquia tipográfica e interações físicas responsivas, o meu trabalho procura ser premium, leve e interativo.
                 </p>
               </div>
 
               <div class="about-details">
                 <div class="details-section">
-                  <h3 class="details-title">EXPERTISE</h3>
+                  <h3 class="details-title" data-i18n="about_expertise_title">ESPECIALIDADES</h3>
                   <ul class="details-list">
-                    <li>Creative Development</li>
+                    <li data-i18n="about_exp_1">Desenvolvimento Criativo</li>
                     <li>WebGL / Three.js / GLSL</li>
-                    <li>Advanced CSS & GSAP Animations</li>
-                    <li>Interactive Experience Design</li>
+                    <li data-i18n="about_exp_2">Animações Avançadas de CSS e GSAP</li>
+                    <li data-i18n="about_exp_3">Design de Experiência Interativa</li>
                   </ul>
                 </div>
                 
                 <div class="details-section">
-                  <h3 class="details-title">AWARDS & RECOGNITIONS</h3>
+                  <h3 class="details-title" data-i18n="about_awards_title">PRÊMIOS & RECONHECIMENTOS</h3>
                   <ul class="details-list">
-                    <li>Awwwards Site of the Day (2026)</li>
+                    <li data-i18n="about_award_1">Awwwards Site do Dia (2026)</li>
                     <li>CSS Design Awards Best UI/UX</li>
                     <li>FWA of the Day</li>
-                    <li>Developer Award (Score 7.53)</li>
+                    <li data-i18n="about_award_2">Prêmio de Desenvolvedor (Nota 7.53)</li>
                   </ul>
                 </div>
               </div>
 
               <div class="about-footer">
-                <span class="footer-label">GET IN TOUCH</span>
+                <span class="footer-label" data-i18n="about_contact_label">ENTRE EM CONTATO</span>
                 <a href="mailto:hello@vibe.dev" class="contact-email">hello@vibe.dev ↗</a>
               </div>
             </div>
@@ -228,20 +230,20 @@
           
           <!-- ADMIN LOGIN VIEW -->
           <div id="admin-login-card" class="admin-card login-card active">
-            <h1 class="admin-card__title">AUTHENTICATE SYSTEM</h1>
-            <p class="admin-card__subtitle">VIBE Admin Workspace Access</p>
+            <h1 class="admin-card__title" data-i18n="admin_login_title">AUTENTICAR SISTEMA</h1>
+            <p class="admin-card__subtitle" data-i18n="admin_login_subtitle">Acesso ao Espaço de Trabalho do Administrador VIBE</p>
             
             <form id="admin-login-form" class="admin-form">
               <div class="form-group">
-                <label for="login-username">SYSTEM ID</label>
+                <label for="login-username" data-i18n="admin_login_user_label">ID DO SISTEMA</label>
                 <input type="text" id="login-username" placeholder="Username" required autocomplete="username" />
               </div>
               <div class="form-group">
-                <label for="login-password">ACCESS PASSWORD</label>
+                <label for="login-password" data-i18n="admin_login_pass_label">SENHA DE ACESSO</label>
                 <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password" />
               </div>
-              <div class="form-error" id="login-error">Invalid System Credentials.</div>
-              <button type="submit" class="btn-admin-submit">INITIALIZE ACCESS</button>
+              <div class="form-error" id="login-error" data-i18n="admin_login_error">Credenciais do Sistema Inválidas.</div>
+              <button type="submit" class="btn-admin-submit" data-i18n="admin_login_btn">INICIALIZAR ACESSO</button>
             </form>
           </div>
 
@@ -249,87 +251,87 @@
           <div id="admin-dashboard-card" class="admin-card dashboard-card">
             <div class="dashboard-header">
               <div>
-                <h1 class="admin-card__title">SYSTEM CONTROL</h1>
-                <p class="admin-card__subtitle">Configure portfolio projects databases</p>
+                <h1 class="admin-card__title" data-i18n="admin_dash_title">CONTROLE DO SISTEMA</h1>
+                <p class="admin-card__subtitle" data-i18n="admin_dash_subtitle">Configurar banco de dados dos projetos do portfólio</p>
               </div>
-              <button id="admin-logout-btn" class="btn-admin-secondary">TERMINATE ACCESS</button>
+              <button id="admin-logout-btn" class="btn-admin-secondary" data-i18n="admin_dash_logout">TERMINATE ACCESS</button>
             </div>
 
             <div class="dashboard-grid">
               
               <!-- Project creation form -->
               <div class="dashboard-column form-column">
-                <h2 class="column-title" id="form-action-title">ADD NEW PORTFOLIO</h2>
+                <h2 class="column-title" id="form-action-title" data-i18n="admin_form_title_add">ADICIONAR NOVO PORTFÓLIO</h2>
                 
                 <form id="project-form" class="admin-form">
                   <!-- Secret DB ID for edits -->
                   <input type="hidden" id="project-db-id" />
                   
                   <div class="form-group">
-                    <label for="project-name">PROJECT NAME</label>
+                    <label for="project-name" data-i18n="admin_form_name">NOME DO PROJETO</label>
                     <input type="text" id="project-name" placeholder="e.g. Moving Portraits" required />
                   </div>
                   
                   <div class="form-group">
-                    <label for="project-slug">URL SLUG</label>
+                    <label for="project-slug" data-i18n="admin_form_slug">SLUG DA URL</label>
                     <input type="text" id="project-slug" placeholder="e.g. moving-portraits" required />
                   </div>
                   
                   <div class="form-row-2">
                     <div class="form-group">
-                      <label for="project-year">YEAR</label>
+                      <label for="project-year" data-i18n="admin_form_year">ANO</label>
                       <input type="text" id="project-year" placeholder="e.g. 2026" required />
                     </div>
                     <div class="form-group">
-                      <label for="project-color">ACCENT COLOR</label>
+                      <label for="project-color" data-i18n="admin_form_color">COR DE DESTAQUE</label>
                       <div class="color-picker-wrapper">
-                        <input type="color" id="project-color" value="#ff3e00" />
-                        <input type="text" id="project-color-text" value="#ff3e00" maxlength="7" />
+                        <input type="color" id="project-color" value="#ff3a00" />
+                        <input type="text" id="project-color-text" value="#ff3a00" maxlength="7" />
                       </div>
                     </div>
                   </div>
 
                   <div class="form-group">
-                    <label for="project-role">DEVELOPMENT ROLE</label>
+                    <label for="project-role" data-i18n="admin_form_role">FUNÇÃO DE DESENVOLVIMENTO</label>
                     <input type="text" id="project-role" placeholder="e.g. Creative Technologist" required />
                   </div>
 
                   <div class="form-group">
-                    <label for="project-tech">TECHNOLOGY STACK</label>
+                    <label for="project-tech" data-i18n="admin_form_tech">TECNOLOGIAS USADAS</label>
                     <input type="text" id="project-tech" placeholder="e.g. Three.js, GSAP, WebGL" required />
                   </div>
 
                   <div class="form-group">
-                    <label for="project-link">EXTERNAL LINK</label>
+                    <label for="project-link" data-i18n="admin_form_link">LINK EXTERNO</label>
                     <input type="text" id="project-link" placeholder="e.g. https://myproject.com or #" value="#" />
                   </div>
 
                   <div class="form-group">
-                    <label for="project-image" id="image-input-label">IMAGE COVER FILE (MAX 5MB)</label>
+                    <label for="project-image" id="image-input-label" data-i18n="admin_form_image">ARQUIVO DE IMAGEM DE CAPA (MÁX 5MB)</label>
                     <input type="file" id="project-image" accept="image/*" />
-                    <span class="file-help-text" id="file-help-text">Select a JPG/PNG image cover</span>
+                    <span class="file-help-text" id="file-help-text" data-i18n="admin_form_image_help">Selecione uma imagem de capa JPG/PNG</span>
                   </div>
 
-                  <div class="form-error" id="project-form-error">An error occurred.</div>
-                  <div class="form-success" id="project-form-success">Project saved successfully!</div>
+                  <div class="form-error" id="project-form-error" data-i18n="admin_form_error_generic">Ocorreu um erro.</div>
+                  <div class="form-success" id="project-form-success" data-i18n="admin_form_success_generic">Projeto salvo com sucesso!</div>
 
                   <div class="form-actions">
-                    <button type="submit" id="btn-project-save" class="btn-admin-submit">COMMIT TO DATABASE</button>
-                    <button type="button" id="btn-project-cancel" class="btn-admin-secondary hidden">CANCEL EDIT</button>
+                    <button type="submit" id="btn-project-save" class="btn-admin-submit" data-i18n="admin_form_btn_commit">SALVAR NA BASE DE DADOS</button>
+                    <button type="button" id="btn-project-cancel" class="btn-admin-secondary hidden" data-i18n="admin_form_btn_cancel">CANCELAR EDIÇÃO</button>
                   </div>
                 </form>
               </div>
 
               <!-- List of projects in DB -->
               <div class="dashboard-column list-column">
-                <h2 class="column-title">DATABASE PROJECTS</h2>
+                <h2 class="column-title" data-i18n="admin_table_title">PROJETOS NA BASE DE DADOS</h2>
                 <div class="admin-table-wrapper">
                   <table class="admin-table">
                     <thead>
                       <tr>
-                        <th>NAME</th>
-                        <th>YEAR</th>
-                        <th>ACTIONS</th>
+                        <th data-i18n="admin_table_header_name">NOME</th>
+                        <th data-i18n="admin_table_header_year">ANO</th>
+                        <th data-i18n="admin_table_header_actions">AÇÕES</th>
                       </tr>
                     </thead>
                     <tbody id="admin-projects-list">
