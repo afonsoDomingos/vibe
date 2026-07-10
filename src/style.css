@@ -1169,7 +1169,7 @@ html, body {
     padding: 30px;
   }
   .canvas-container {
-    height: 450px;
+    height: 520px;
   }
   .works-list-container {
     padding: 30px 0;
@@ -1707,6 +1707,125 @@ html, body {
 .dashboard-tab-content.active {
   display: block;
 }
+
+/* Service Request Button & Modal styles */
+.btn-request-service {
+  display: inline-block;
+  background-color: transparent;
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: bold;
+  cursor: none;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+  margin-top: 25px;
+}
+
+.btn-request-service:hover {
+  background-color: var(--accent-color);
+  color: #000;
+  transform: translateY(-1px);
+}
+
+.admin-select {
+  background-color: #121215;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--text-color);
+  padding: 12px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.3s ease;
+  cursor: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-select:focus {
+  border-color: var(--accent-color);
+}
+
+.admin-textarea {
+  background-color: #121215;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--text-color);
+  padding: 12px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.3s ease;
+  cursor: none;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-textarea:focus {
+  border-color: var(--accent-color);
+}
+
+.request-form-card {
+  padding: 30px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.request-modal-container {
+  max-width: 900px;
+}
+
+/* Status pill styles */
+.status-pill {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 2px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: bold;
+}
+
+.status-pill.pendente {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+  border: 1px solid rgba(255, 152, 0, 0.2);
+}
+
+.status-pill.lido {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+  border: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.status-pill.respondido {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.btn-table-whatsapp {
+  background-color: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  color: #4caf50;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: none;
+  transition: all 0.3s ease;
+}
+
+.btn-table-whatsapp:hover {
+  background-color: #4caf50;
+  color: #000;
+}
+
 
 
 

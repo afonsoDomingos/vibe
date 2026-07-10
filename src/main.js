@@ -160,6 +160,7 @@ let servicesData = [];
 let currentLang = 'pt';
 const DEFAULT_COLOR = '#ff3a00';
 let editServiceId = null;
+const getBaseCameraZ = () => window.innerWidth <= 768 ? 3.6 : 5.2;
 
 // Zoom timers and active selections
 let zoomTimeout = null;
@@ -556,7 +557,7 @@ function initThreeCanvas() {
   scene = new THREE.Scene();
   
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-  camera.position.z = 5.2;
+  camera.position.z = getBaseCameraZ();
 
   renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -660,7 +661,7 @@ function initThreeCanvas() {
           zoomTimeout = setTimeout(() => {
             openBtn.classList.add('hidden');
             gsap.to(camera.position, {
-              z: 5.2,
+              z: getBaseCameraZ(),
               duration: 1,
               ease: 'power2.out'
             });
@@ -687,6 +688,9 @@ function initThreeCanvas() {
   window.addEventListener('resize', () => {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
+    if (!activeProject) {
+      camera.position.z = getBaseCameraZ();
+    }
     renderer.setSize(container.clientWidth, container.clientHeight);
   });
 
@@ -906,7 +910,7 @@ function initOverlayControls() {
           
           // Revert camera zoom
           gsap.to(camera.position, {
-            z: 5.2,
+            z: getBaseCameraZ(),
             duration: 1,
             ease: 'power2.out'
           });
@@ -943,6 +947,7 @@ async function checkAdminSession() {
       showCard(dashboardCard);
       loadAdminProjectsList();
       loadAdminServicesList();
+      loadAdminRequestsList();
     } else {
       localStorage.removeItem('vibe_jwt');
       showCard(loginCard);
@@ -1390,16 +1395,20 @@ function initServiceForm() {
 function initAdminTabs() {
   const projBtn = document.getElementById('tab-projects-btn');
   const servBtn = document.getElementById('tab-services-btn');
+  const reqBtn = document.getElementById('tab-requests-btn');
   const projContent = document.getElementById('tab-projects-content');
   const servContent = document.getElementById('tab-services-content');
+  const reqContent = document.getElementById('tab-requests-content');
 
-  if (!projBtn || !servBtn) return;
+  if (!projBtn || !servBtn || !reqBtn) return;
 
   projBtn.addEventListener('click', () => {
     projBtn.classList.add('active');
     servBtn.classList.remove('active');
+    reqBtn.classList.remove('active');
     projContent.classList.add('active');
     servContent.classList.remove('active');
+    reqContent.classList.remove('active');
     loadAdminProjectsList();
     setupCursorHovers();
   });
@@ -1407,10 +1416,259 @@ function initAdminTabs() {
   servBtn.addEventListener('click', () => {
     servBtn.classList.add('active');
     projBtn.classList.remove('active');
+    reqBtn.classList.remove('active');
     servContent.classList.add('active');
     projContent.classList.remove('active');
+    reqContent.classList.remove('active');
     loadAdminServicesList();
     setupCursorHovers();
+  });
+
+  reqBtn.addEventListener('click', () => {
+    reqBtn.classList.add('active');
+    projBtn.classList.remove('active');
+    servBtn.classList.remove('active');
+    reqContent.classList.add('active');
+    projContent.classList.remove('active');
+    servContent.classList.remove('active');
+    loadAdminRequestsList();
+    setupCursorHovers();
+  });
+}
+
+// CLIENT-SIDE SERVICE REQUESTS MODAL
+
+function populateRequestServiceDropdown() {
+  const select = document.getElementById('req-service-select');
+  if (!select) return;
+
+  select.innerHTML = '<option value="" disabled selected>Selecione um serviço...</option>';
+
+  if (servicesData.length === 0) {
+    const fallbacks = ['Desenvolvimento Criativo', 'WebGL / Three.js / GLSL', 'Animações Avançadas de CSS e GSAP', 'Design de Experiência Interativa'];
+    fallbacks.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      select.appendChild(option);
+    });
+    return;
+  }
+
+  servicesData.forEach(service => {
+    const option = document.createElement('option');
+    option.value = service.title;
+    option.textContent = service.title;
+    select.appendChild(option);
+  });
+}
+
+function initClientRequestModal() {
+  const openBtn = document.getElementById('open-request-modal-btn');
+  const overlay = document.getElementById('request-overlay');
+  const closeBtn = document.getElementById('request-overlay-close');
+  const form = document.getElementById('client-request-form');
+  const errorText = document.getElementById('req-form-error');
+  const successText = document.getElementById('req-form-success');
+
+  if (!overlay || !openBtn || !closeBtn) return;
+
+  openBtn.addEventListener('click', () => {
+    overlay.classList.remove('hidden');
+    populateRequestServiceDropdown();
+    errorText.style.display = 'none';
+    successText.style.display = 'none';
+    form.reset();
+  });
+
+  closeBtn.addEventListener('click', () => {
+    overlay.classList.add('hidden');
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      overlay.classList.add('hidden');
+    }
+  });
+
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorText.style.display = 'none';
+    successText.style.display = 'none';
+
+    const payload = {
+      clientName: document.getElementById('req-client-name').value,
+      clientEmail: document.getElementById('req-client-email').value,
+      clientPhone: document.getElementById('req-client-phone').value,
+      service: document.getElementById('req-service-select').value,
+      message: document.getElementById('req-message').value
+    };
+
+    const submitBtn = document.getElementById('btn-request-submit');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'ENVIANDO...';
+
+    try {
+      const res = await fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        successText.style.display = 'block';
+        form.reset();
+        
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+        }, 2500);
+      } else {
+        errorText.textContent = data.message || 'Erro ao enviar a proposta.';
+        errorText.style.display = 'block';
+      }
+    } catch (err) {
+      errorText.textContent = 'Erro de rede. Verifique sua conexão.';
+      errorText.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+}
+
+// ADMIN PANEL REQUESTS LIST
+
+async function loadAdminRequestsList() {
+  const container = document.getElementById('admin-requests-list');
+  if (!container) return;
+
+  try {
+    const token = localStorage.getItem('vibe_jwt');
+    const res = await fetch('/api/requests', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const requests = await res.json();
+    
+    container.innerHTML = '';
+    if (requests.length === 0) {
+      container.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Nenhuma solicitação encontrada no banco de dados.</td></tr>`;
+      return;
+    }
+
+    requests.forEach(r => {
+      const date = new Date(r.createdAt).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const tr = document.createElement('tr');
+      const cleanPhone = r.clientPhone.replace(/[^0-9+]/g, '');
+
+      tr.innerHTML = `
+        <td style="font-family: var(--font-mono); font-size: 11px;">${date}</td>
+        <td>
+          <div style="font-weight: 700;">${r.clientName}</div>
+          <div style="font-size: 11px; color: var(--text-muted);">${r.clientEmail}</div>
+          <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">${r.clientPhone}</div>
+        </td>
+        <td><span style="font-weight: 700; color: var(--accent-color);">${r.service}</span></td>
+        <td style="max-width: 300px; word-break: break-word; font-size: 12px; color: var(--text-muted);">${r.message}</td>
+        <td>
+          <select class="admin-select select-status-update" data-id="${r._id}" style="padding: 4px 8px; font-size: 11px; width: auto; height: auto;">
+            <option value="Pendente" ${r.status === 'Pendente' ? 'selected' : ''}>Pendente</option>
+            <option value="Lido" ${r.status === 'Lido' ? 'selected' : ''}>Lido</option>
+            <option value="Respondido" ${r.status === 'Respondido' ? 'selected' : ''}>Respondido</option>
+          </select>
+        </td>
+        <td>
+          <div class="table-actions" style="flex-direction: column; gap: 6px;">
+            <button class="btn-table-whatsapp" data-phone="${cleanPhone}" data-name="${r.clientName}" data-service="${r.service}">Contatar ↗</button>
+            <button class="btn-table-delete btn-request-delete" data-id="${r._id}">Excluir</button>
+          </div>
+        </td>
+      `;
+      container.appendChild(tr);
+    });
+
+    setupCursorHovers();
+    setupAdminRequestsActionListeners(requests);
+  } catch (err) {
+    container.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#ff3333;padding:20px;">Falha ao carregar as solicitações.</td></tr>`;
+  }
+}
+
+function setupAdminRequestsActionListeners(requests) {
+  const statusSelects = document.querySelectorAll('.select-status-update');
+  statusSelects.forEach(select => {
+    select.addEventListener('change', async () => {
+      const id = select.getAttribute('data-id');
+      const newStatus = select.value;
+      const token = localStorage.getItem('vibe_jwt');
+
+      try {
+        const res = await fetch(`/api/requests/${id}`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        
+        if (!res.ok) {
+          alert('Erro ao atualizar status.');
+          loadAdminRequestsList();
+        }
+      } catch (err) {
+        alert('Erro de comunicação.');
+        loadAdminRequestsList();
+      }
+    });
+  });
+
+  const deleteBtns = document.querySelectorAll('.btn-request-delete');
+  deleteBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      if (confirm('Deseja realmente excluir esta solicitação?')) {
+        const token = localStorage.getItem('vibe_jwt');
+        try {
+          const res = await fetch(`/api/requests/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            loadAdminRequestsList();
+          } else {
+            alert('Falha ao excluir.');
+          }
+        } catch (err) {
+          alert('Erro de comunicação.');
+        }
+      }
+    });
+  });
+
+  const whatsappBtns = document.querySelectorAll('.btn-table-whatsapp');
+  whatsappBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const phone = btn.getAttribute('data-phone');
+      const name = btn.getAttribute('data-name');
+      const service = btn.getAttribute('data-service');
+
+      const baseMsg = `Olá ${name}, recebi sua solicitação para o serviço de "${service}" no meu portfólio Vibe. Como posso te ajudar hoje?`;
+      const encodedMsg = encodeURIComponent(baseMsg);
+
+      window.open(`https://wa.me/${phone}?text=${encodedMsg}`, '_blank');
+    });
   });
 }
 
@@ -1480,6 +1738,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   initAdminTabs();
   initProjectForm();
   initServiceForm();
+
+  // Client requests modal
+  initClientRequestModal();
 
   // Overlay controller logic
   initOverlayControls();

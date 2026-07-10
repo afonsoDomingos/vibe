@@ -226,6 +226,7 @@
                   <span class="contact-divider">/</span>
                   <a href="https://wa.me/258879642412" target="_blank" class="contact-phone">+258 87 964 2412 ↗</a>
                 </div>
+                <button id="open-request-modal-btn" class="btn-request-service">SOLICITAR SERVIÇO ↗</button>
               </div>
             </div>
           </div>
@@ -267,6 +268,7 @@
               <div class="dashboard-nav-tabs">
                 <button id="tab-projects-btn" class="btn-tab active">PROJETOS</button>
                 <button id="tab-services-btn" class="btn-tab">SERVIÇOS</button>
+                <button id="tab-requests-btn" class="btn-tab">SOLICITAÇÕES</button>
               </div>
 
               <button id="admin-logout-btn" class="btn-admin-secondary" data-i18n="admin_dash_logout">TERMINATE ACCESS</button>
@@ -418,6 +420,35 @@
               </div>
             </div>
 
+            <!-- REQUESTS TAB CONTENT -->
+            <div id="tab-requests-content" class="dashboard-tab-content">
+              <div class="dashboard-grid" style="grid-template-columns: 1fr;">
+                
+                <!-- List of proposals in DB -->
+                <div class="dashboard-column list-column" style="max-width: 100%;">
+                  <h2 class="column-title">SOLICITAÇÕES DE SERVIÇO RECEBIDAS</h2>
+                  <div class="admin-table-wrapper" style="max-height: 600px;">
+                    <table class="admin-table">
+                      <thead>
+                        <tr>
+                          <th>DATA</th>
+                          <th>CLIENTE</th>
+                          <th>SERVIÇO</th>
+                          <th>MENSAGEM</th>
+                          <th>STATUS</th>
+                          <th>AÇÕES</th>
+                        </tr>
+                      </thead>
+                      <tbody id="admin-requests-list">
+                        <!-- Dynamically rendered -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -432,6 +463,63 @@
       </div>
       <div class="bottom-banner__text">VIBE</div>
     </footer>
+
+    <!-- Service Request Overlay (Modal) -->
+    <div id="request-overlay" class="project-overlay hidden">
+      <div class="project-overlay__close-btn" id="request-overlay-close">&times;</div>
+      
+      <div class="project-overlay__container request-modal-container">
+        <!-- Left Side: Header Info -->
+        <div class="project-overlay__left">
+          <span class="project-overlay__subtitle">ORÇAMENTO / PROPOSTA</span>
+          <h2 class="project-overlay__main-title">SOLICITAR SERVIÇO</h2>
+          <p style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-top: 15px;">
+            Conte-me sobre o seu projeto! Preencha as informações básicas e retornarei o contato em breve.
+          </p>
+          <div class="project-overlay__brand">VIBE // STUDIO</div>
+        </div>
+
+        <!-- Right Side: Contact Form -->
+        <div class="project-overlay__right">
+          <div class="project-card-detail request-form-card">
+            <form id="client-request-form" class="admin-form">
+              <div class="form-group">
+                <label for="req-client-name">SEU NOME</label>
+                <input type="text" id="req-client-name" placeholder="e.g. Maria Silva" required />
+              </div>
+              
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="req-client-email">E-MAIL</label>
+                  <input type="text" id="req-client-email" placeholder="e.g. maria@empresa.com" required />
+                </div>
+                <div class="form-group">
+                  <label for="req-client-phone">WHATSAPP / TELEFONE</label>
+                  <input type="text" id="req-client-phone" placeholder="e.g. +258 84 787 7405" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="req-service-select">SERVIÇO DESEJADO</label>
+                <select id="req-service-select" class="admin-select" required>
+                  <option value="" disabled selected>Selecione um serviço...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="req-message">SOBRE O PROJETO (MENSAGEM)</label>
+                <textarea id="req-message" rows="4" class="admin-textarea" placeholder="Descreva brevemente o que você precisa, objetivos e prazos..." required></textarea>
+              </div>
+
+              <div class="form-error" id="req-form-error">Ocorreu um erro ao enviar.</div>
+              <div class="form-success" id="req-form-success">Sua solicitação foi enviada com sucesso!</div>
+
+              <button type="submit" id="btn-request-submit" class="btn-admin-submit">ENVIAR SOLICITAÇÃO ↗</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Project Details Overlay (Sliding Drawer) -->
     <div id="project-overlay" class="project-overlay hidden">

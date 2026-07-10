@@ -63,6 +63,17 @@ const serviceSchema = new mongoose.Schema({
 
 const Service = mongoose.model('Service', serviceSchema);
 
+const serviceRequestSchema = new mongoose.Schema({
+  clientName: { type: String, required: true },
+  clientEmail: { type: String, required: true },
+  clientPhone: { type: String, required: true },
+  service: { type: String, required: true },
+  message: { type: String, required: true },
+  status: { type: String, enum: ['Pendente', 'Lido', 'Respondido'], default: 'Pendente' }
+}, { timestamps: true });
+
+const ServiceRequest = mongoose.model('ServiceRequest', serviceRequestSchema);
+
 // Initial Data Seeding
 async function seedInitialData() {
   try {
@@ -210,6 +221,73 @@ app.delete('/api/services/:id', authenticateToken, async (req, res) => {
     res.json({ message: 'Service deleted successfully.' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting service.', error: err.message });
+  }
+});
+
+// REQUESTS ROUTES
+
+// Create a new request (Public)
+app.post('/api/requests', async (req, res) => {
+  try {
+    const { clientName, clientEmail, clientPhone, service, message } = req.body;
+    if (!clientName || !clientEmail || !clientPhone || !service || !message) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    const newRequest = new ServiceRequest({
+      clientName,
+      clientEmail,
+      clientPhone,
+      service,
+      message
+    });
+
+    await newRequest.save();
+    res.status(201).json(newRequest);
+  } catch (err) {
+    res.status(500).json({ message: 'Error submitting request.', error: err.message });
+  }
+});
+
+// Fetch all requests (Authenticated)
+app.get('/api/requests', authenticateToken, async (req, res) => {
+  try {
+    const requests = await ServiceRequest.find().sort({ createdAt: -1 });
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching requests.', error: err.message });
+  }
+});
+
+// Update request status (Authenticated)
+app.put('/api/requests/:id', authenticateToken, async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!status || !['Pendente', 'Lido', 'Respondido'].includes(status)) {
+      return res.status(400).json({ message: 'Valid status is required.' });
+    }
+
+    const request = await ServiceRequest.findById(req.params.id);
+    if (!request) return res.status(404).json({ message: 'Request not found.' });
+
+    request.status = status;
+    await request.save();
+    res.json(request);
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating request.', error: err.message });
+  }
+});
+
+// Delete request (Authenticated)
+app.delete('/api/requests/:id', authenticateToken, async (req, res) => {
+  try {
+    const request = await ServiceRequest.findById(req.params.id);
+    if (!request) return res.status(404).json({ message: 'Request not found.' });
+
+    await ServiceRequest.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Request deleted successfully.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting request.', error: err.message });
   }
 });
 
