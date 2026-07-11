@@ -497,8 +497,9 @@ html, body {
 }
 
 .marquee-link {
-  font-size: 28px;
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 500;
   color: var(--text-muted);
   text-decoration: none;
   display: block;
@@ -508,12 +509,41 @@ html, body {
 }
 
 .marquee-link:hover {
-  color: var(--accent-color);
   transform: translateX(10px);
 }
 
-.marquee-item.active .marquee-link {
-  color: var(--text-color);
+.marquee-link .code-component {
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+}
+.marquee-link .code-attr {
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 0.3s ease;
+}
+.marquee-link .code-string {
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 0.3s ease;
+}
+.marquee-link .code-punct {
+  color: rgba(255, 255, 255, 0.15);
+  transition: color 0.3s ease;
+}
+
+.marquee-link:hover .code-component,
+.marquee-item.active .marquee-link .code-component {
+  color: #ffb300; /* Amber/Gold for component name */
+}
+.marquee-link:hover .code-attr,
+.marquee-item.active .marquee-link .code-attr {
+  color: #4fc3f7; /* Cyan/Light Blue for attribute key */
+}
+.marquee-link:hover .code-string,
+.marquee-item.active .marquee-link .code-string {
+  color: var(--accent-color); /* Vibrant Orange for string value */
+}
+.marquee-link:hover .code-punct,
+.marquee-item.active .marquee-link .code-punct {
+  color: #ffffff; /* White for brackets/equal sign */
 }
 
 /* ARCHIVE VIEW */

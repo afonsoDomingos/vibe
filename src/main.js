@@ -59,6 +59,7 @@ const TRANSLATIONS = {
     admin_form_color: "COR DE DESTAQUE",
     admin_form_role: "FUNÇÃO DE DESENVOLVIMENTO",
     admin_form_tech: "TECNOLOGIAS USADAS",
+    admin_form_description: "DESCRIÇÃO DO PROJETO",
     admin_form_link: "LINK EXTERNO",
     admin_form_image: "ARQUIVO DE IMAGEM DE CAPA (MÁX 5MB)",
     admin_form_image_help: "Selecione uma imagem de capa JPG/PNG",
@@ -133,6 +134,7 @@ const TRANSLATIONS = {
     admin_form_color: "ACCENT COLOR",
     admin_form_role: "DEVELOPMENT ROLE",
     admin_form_tech: "TECHNOLOGY STACK",
+    admin_form_description: "PROJECT DESCRIPTION",
     admin_form_link: "EXTERNAL LINK",
     admin_form_image: "IMAGE COVER FILE (MAX 5MB)",
     admin_form_image_help: "Select a JPG/PNG image cover",
@@ -168,12 +170,12 @@ let activeProject = null;
 
 // fallback local mock data in case API fails
 const FALLBACK_PROJECTS = [
-  { id: 0, name: 'Moving Portraits', slug: 'moving-portraits', image: '/images/moving-portraits.png', color: '#ff3a00', year: '2026', role: 'Creative Director & WebGL', technology: 'Three.js, GLSL, GSAP', link: '#' },
-  { id: 1, name: 'Issey Miyake SS25', slug: 'issey-miyake-ss25', image: '/images/issey-miyake.png', color: '#ff3a00', year: '2025', role: 'Interactive Engineer', technology: 'WebGL, Vanilla JS, CSS3D', link: '#' },
-  { id: 2, name: 'Studies in Motion', slug: 'studies-in-motion', image: '/images/studies-in-motion.png', color: '#ff3a00', year: '2025', role: 'Motion Lead', technology: 'GSAP ScrollTrigger, Lenis', link: '#' },
-  { id: 3, name: 'Ruby Campbell', slug: 'ruby-campbell', image: '/images/ruby-campbell.png', color: '#ff3a00', year: '2024', role: 'Fullstack Developer', technology: 'SvelteKit, Node.js, GSAP', link: '#' },
-  { id: 4, name: 'Shaped by Earth', slug: 'shaped-by-earth', image: '/images/shaped-by-earth.png', color: '#ff3a00', year: '2024', role: '3D Developer', technology: 'Three.js, Blender, GSAP', link: '#' },
-  { id: 5, name: 'Echoes in Light', slug: 'echoes-in-light', image: '/images/echoes-in-light.png', color: '#ff3a00', year: '2023', role: 'Creative Technologist', technology: 'Canvas2D, Custom WebAudio', link: '#' }
+  { id: 0, name: 'Moving Portraits', slug: 'moving-portraits', image: '/images/moving-portraits.png', color: '#ff3a00', year: '2026', role: 'Creative Director & WebGL', technology: 'Three.js, GLSL, GSAP', description: 'Um projeto experimental de WebGL que explora a interatividade com retratos tridimensionais físicos, integrando shaders personalizados e ScrollTrigger.', link: '#' },
+  { id: 1, name: 'Issey Miyake SS25', slug: 'issey-miyake-ss25', image: '/images/issey-miyake.png', color: '#ff3a00', year: '2025', role: 'Interactive Engineer', technology: 'WebGL, Vanilla JS, CSS3D', description: 'Desenvolvimento de uma vitrine digital 3D imersiva para a coleção de primavera/verão 2025 da Issey Miyake, com transições físicas interativas.', link: '#' },
+  { id: 2, name: 'Studies in Motion', slug: 'studies-in-motion', image: '/images/studies-in-motion.png', color: '#ff3a00', year: '2025', role: 'Motion Lead', technology: 'GSAP ScrollTrigger, Lenis', description: 'Uma exploração detalhada sobre os princípios de animação web contemporâneos utilizando rolagem suave Lenis e timelines avançadas do GSAP.', link: '#' },
+  { id: 3, name: 'Ruby Campbell', slug: 'ruby-campbell', image: '/images/ruby-campbell.png', color: '#ff3a00', year: '2024', role: 'Fullstack Developer', technology: 'SvelteKit, Node.js, GSAP', description: 'Plataforma de portfólio de alta fidelidade desenvolvida para a modelo britânica Ruby Campbell, focando em performance impecável e design editorial.', link: '#' },
+  { id: 4, name: 'Shaped by Earth', slug: 'shaped-by-earth', image: '/images/shaped-by-earth.png', color: '#ff3a00', year: '2024', role: '3D Developer', technology: 'Three.js, Blender, GSAP', description: 'Uma jornada visual e interativa em 3D sobre a erosão natural da terra, combinando modelos otimizados no Blender e interações em tempo real com Three.js.', link: '#' },
+  { id: 5, name: 'Echoes in Light', slug: 'echoes-in-light', image: '/images/echoes-in-light.png', color: '#ff3a00', year: '2023', role: 'Creative Technologist', technology: 'Canvas2D, Custom WebAudio', description: 'Uma instalação interativa audiovisual gerada em tempo real no Canvas 2D utilizando dados de frequência da Web Audio API.', link: '#' }
 ];
 
 // App State
@@ -276,7 +278,13 @@ function populateUI() {
         const a = document.createElement('a');
         a.href = project.link || '#';
         a.className = 'marquee-link';
-        a.textContent = project.name;
+        
+        const pascalName = project.name
+          .replace(/[^a-zA-Z0-9\s-]/g, '')
+          .split(/[\s-]+/)
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join('');
+        a.innerHTML = `<span class="code-punct">&lt;</span><span class="code-component">${pascalName}</span> <span class="code-attr">status</span><span class="code-punct">=</span><span class="code-string">"active"</span><span class="code-punct"> /&gt;</span>`;
         
         li.appendChild(a);
         worksListUl.appendChild(li);
@@ -566,6 +574,7 @@ function initThreeCanvas() {
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   buildThreeCubeGroup();
 
@@ -721,7 +730,7 @@ function initThreeCanvas() {
         
         if (currentHoveredPanel !== hovered) {
           if (currentHoveredPanel) {
-            gsap.to(currentHoveredPanel.material, { opacity: 0.85, duration: 0.2 });
+            gsap.to(currentHoveredPanel.material, { opacity: 1.0, duration: 0.2 });
             gsap.to(currentHoveredPanel.position, {
               x: currentHoveredPanel.userData.basePos.x,
               y: currentHoveredPanel.userData.basePos.y,
@@ -745,7 +754,7 @@ function initThreeCanvas() {
       } else {
         cursor.classList.remove('viewing');
         if (currentHoveredPanel) {
-          gsap.to(currentHoveredPanel.material, { opacity: 0.85, duration: 0.3 });
+          gsap.to(currentHoveredPanel.material, { opacity: 1.0, duration: 0.3 });
           gsap.to(currentHoveredPanel.position, {
             x: currentHoveredPanel.userData.basePos.x,
             y: currentHoveredPanel.userData.basePos.y,
@@ -779,7 +788,11 @@ function buildThreeCubeGroup() {
     panels = [];
   }
 
-  textures = projectsData.map(p => textureLoader.load(p.image));
+  textures = projectsData.map(p => {
+    const tex = textureLoader.load(p.image);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  });
 
   cubeGroup = new THREE.Group();
   scene.add(cubeGroup);
@@ -809,7 +822,7 @@ function buildThreeCubeGroup() {
           map: texture,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.85
+          opacity: 1.0
         });
 
         const panelMesh = new THREE.Mesh(panelGeom, material);
@@ -856,7 +869,7 @@ function setupMarqueeHoverTriggers() {
 
     link.addEventListener('mouseleave', () => {
       panels.forEach(p => {
-        gsap.to(p.material, { opacity: 0.85, duration: 0.3 });
+        gsap.to(p.material, { opacity: 1.0, duration: 0.3 });
         gsap.to(p.position, { x: p.userData.basePos.x, y: p.userData.basePos.y, z: p.userData.basePos.z, duration: 0.4, ease: 'power2.out' });
       });
     });
@@ -886,10 +899,10 @@ function initOverlayControls() {
       document.getElementById('overlay-tech').textContent = activeProject.technology;
       document.getElementById('overlay-year').textContent = activeProject.year;
       
-      const ptDesc = `Projeto de desenvolvimento interativo focado em design de alto impacto. Desenvolvido para a função de ${activeProject.role} utilizando a tecnologia ${activeProject.technology}.`;
-      const enDesc = `An interactive development project focusing on high-impact experience design. Crafted for the role of ${activeProject.role} utilizing ${activeProject.technology} tech.`;
+      const fallbackPtDesc = `Projeto de desenvolvimento interativo focado em design de alto impacto. Desenvolvido para a função de ${activeProject.role} utilizando a tecnologia ${activeProject.technology}.`;
+      const fallbackEnDesc = `An interactive development project focusing on high-impact experience design. Crafted for the role of ${activeProject.role} utilizing ${activeProject.technology} tech.`;
       
-      document.getElementById('overlay-desc').textContent = currentLang === 'pt' ? ptDesc : enDesc;
+      document.getElementById('overlay-desc').textContent = activeProject.description || (currentLang === 'pt' ? fallbackPtDesc : fallbackEnDesc);
       document.getElementById('overlay-link').href = activeProject.link || '#';
 
       // Open detailed modal overlay
@@ -1099,6 +1112,7 @@ function startEditMode(project) {
   document.getElementById('project-color-text').value = project.color;
   document.getElementById('project-role').value = project.role;
   document.getElementById('project-tech').value = project.technology;
+  document.getElementById('project-description').value = project.description || '';
   document.getElementById('project-link').value = project.link;
 }
 
@@ -1166,6 +1180,7 @@ function initProjectForm() {
     formData.append('color', colorText.value);
     formData.append('role', document.getElementById('project-role').value);
     formData.append('technology', document.getElementById('project-tech').value);
+    formData.append('description', document.getElementById('project-description').value);
     formData.append('link', document.getElementById('project-link').value);
 
     const imageFile = document.getElementById('project-image').files[0];

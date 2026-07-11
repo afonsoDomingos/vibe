@@ -50,6 +50,7 @@ const projectSchema = new mongoose.Schema({
   year: { type: String, required: true },
   role: { type: String, required: true },
   technology: { type: String, required: true },
+  description: { type: String, default: '' },
   link: { type: String, default: '#' }
 }, { timestamps: true });
 
@@ -81,11 +82,11 @@ async function seedInitialData() {
     if (count === 0) {
       console.log('Seeding initial project data...');
       const initialProjects = [
-        { id: 0, name: 'Moving Portraits', slug: 'moving-portraits', image: '/images/moving-portraits.png', color: '#ff3a00', year: '2026', role: 'Creative Director & WebGL', technology: 'Three.js, GLSL, GSAP', link: '#' },
-        { id: 1, name: 'Issey Miyake SS25', slug: 'issey-miyake-ss25', image: '/images/issey-miyake.png', color: '#ff3a00', year: '2025', role: 'Interactive Engineer', technology: 'WebGL, Vanilla JS, CSS3D', link: '#' },
-        { id: 2, name: 'Studies in Motion', slug: 'studies-in-motion', image: '/images/studies-in-motion.png', color: '#ff3a00', year: '2025', role: 'Motion Lead', technology: 'GSAP ScrollTrigger, Lenis', link: '#' },
-        { id: 3, name: 'Ruby Campbell', slug: 'ruby-campbell', image: '/images/ruby-campbell.png', color: '#ff3a00', year: '2024', role: 'Fullstack Developer', technology: 'SvelteKit, Node.js, GSAP', link: '#' },
-        { id: 4, name: 'Shaped by Earth', slug: 'shaped-by-earth', image: '/images/shaped-by-earth.png', color: '#ff3a00', year: '2024', role: '3D Developer', technology: 'Three.js, Blender, GSAP', link: '#' },
+        { id: 0, name: 'Moving Portraits', slug: 'moving-portraits', image: '/images/moving-portraits.png', color: '#ff3a00', year: '2026', role: 'Creative Director & WebGL', technology: 'Three.js, GLSL, GSAP', description: 'Um projeto experimental de WebGL que explora a interatividade com retratos tridimensionais físicos, integrando shaders personalizados e ScrollTrigger.', link: '#' },
+        { id: 1, name: 'Issey Miyake SS25', slug: 'issey-miyake-ss25', image: '/images/issey-miyake.png', color: '#ff3a00', year: '2025', role: 'Interactive Engineer', technology: 'WebGL, Vanilla JS, CSS3D', description: 'Desenvolvimento de uma vitrine digital 3D imersiva para a coleção de primavera/verão 2025 da Issey Miyake, com transições físicas interativas.', link: '#' },
+        { id: 2, name: 'Studies in Motion', slug: 'studies-in-motion', image: '/images/studies-in-motion.png', color: '#ff3a00', year: '2025', role: 'Motion Lead', technology: 'GSAP ScrollTrigger, Lenis', description: 'Uma exploração detalhada sobre os princípios de animação web contemporâneos utilizando rolagem suave Lenis e timelines avançadas do GSAP.', link: '#' },
+        { id: 3, name: 'Ruby Campbell', slug: 'ruby-campbell', image: '/images/ruby-campbell.png', color: '#ff3a00', year: '2024', role: 'Fullstack Developer', technology: 'SvelteKit, Node.js, GSAP', description: 'Plataforma de portfólio de alta fidelidade desenvolvida para a modelo britânica Ruby Campbell, focando em performance impecável e design editorial.', link: '#' },
+        { id: 4, name: 'Shaped by Earth', slug: 'shaped-by-earth', image: '/images/shaped-by-earth.png', color: '#ff3a00', year: '2024', role: '3D Developer', technology: 'Three.js, Blender, GSAP', description: 'Uma jornada visual e interativa em 3D sobre a erosão natural da terra, combinando modelos otimizados no Blender e interações em tempo real com Three.js.', link: '#' },
         { id: 5, name: 'Echoes in Light', slug: 'echoes-in-light', image: '/images/echoes-in-light.png', color: '#ff3a00', year: '2023', role: 'Creative Technologist', technology: 'Canvas2D, Custom WebAudio', link: '#' }
       ];
       await Project.insertMany(initialProjects);
@@ -304,7 +305,7 @@ app.get('/api/projects', async (req, res) => {
 // Create project
 app.post('/api/projects', authenticateToken, upload.single('image'), async (req, res) => {
   try {
-    const { name, slug, color, year, role, technology, link } = req.body;
+    const { name, slug, color, year, role, technology, description, link } = req.body;
     
     if (!name || !slug || !year || !role || !technology) {
       return res.status(400).json({ message: 'All fields (except link/color) are required.' });
@@ -342,6 +343,7 @@ app.post('/api/projects', authenticateToken, upload.single('image'), async (req,
       year,
       role,
       technology,
+      description: description || '',
       link: link || '#'
     });
 
@@ -355,7 +357,7 @@ app.post('/api/projects', authenticateToken, upload.single('image'), async (req,
 // Update project
 app.put('/api/projects/:id', authenticateToken, upload.single('image'), async (req, res) => {
   try {
-    const { name, slug, color, year, role, technology, link } = req.body;
+    const { name, slug, color, year, role, technology, description, link } = req.body;
     const project = await Project.findById(req.params.id);
 
     if (!project) return res.status(404).json({ message: 'Project not found.' });
@@ -394,6 +396,7 @@ app.put('/api/projects/:id', authenticateToken, upload.single('image'), async (r
     project.year = year || project.year;
     project.role = role || project.role;
     project.technology = technology || project.technology;
+    project.description = description !== undefined ? description : project.description;
     project.link = link || project.link;
 
     await project.save();
