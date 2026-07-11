@@ -100,18 +100,21 @@ async function seedInitialData() {
 // Initial Services Seeding
 async function seedInitialServices() {
   try {
-    const count = await Service.countDocuments();
-    if (count === 0) {
-      console.log('Seeding initial services data...');
-      const initialServices = [
-        { title: 'Desenvolvimento Criativo', description: 'Websites premium e interativos', order: 0 },
-        { title: 'WebGL / Three.js / GLSL', description: 'Experiências e animações em 3D', order: 1 },
-        { title: 'Animações Avançadas de CSS e GSAP', description: 'Micro-interações fluidas', order: 2 },
-        { title: 'Design de Experiência Interativa', description: 'Interfaces modernas e responsivas', order: 3 }
-      ];
-      await Service.insertMany(initialServices);
-      console.log('Initial services seeded successfully.');
-    }
+    // Delete existing services to reset to the new requested list
+    await Service.deleteMany({});
+    console.log('Cleared previous services from database.');
+
+    const initialServices = [
+      { title: 'Desenvolvimento Web', description: 'Criação de websites modernos e otimizados', order: 0 },
+      { title: 'Emails Corporativos', description: 'Configuração e gestão de emails empresariais', order: 1 },
+      { title: 'Criativos de Oferta', description: 'Design e copy de alta conversão para campanhas', order: 2 },
+      { title: 'Tráfego Pago', description: 'Gestão de anúncios no Meta Ads, Google Ads, etc.', order: 3 },
+      { title: 'Gestão de Conteúdos', description: 'Planeamento, criação e publicação de conteúdos', order: 4 },
+      { title: 'SaaS (Software as a Service)', description: 'Desenvolvimento e hospedagem de aplicações na nuvem', order: 5 },
+      { title: 'Suporte Técnico em TI', description: 'Assistência e manutenção de infraestrutura tecnológica', order: 6 }
+    ];
+    await Service.insertMany(initialServices);
+    console.log('New services seeded successfully.');
   } catch (err) {
     console.error('Error seeding services data:', err);
   }

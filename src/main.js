@@ -1460,7 +1460,15 @@ function populateRequestServiceDropdown() {
   select.innerHTML = '<option value="" disabled selected>Selecione um serviço...</option>';
 
   if (servicesData.length === 0) {
-    const fallbacks = ['Desenvolvimento Criativo', 'WebGL / Three.js / GLSL', 'Animações Avançadas de CSS e GSAP', 'Design de Experiência Interativa'];
+    const fallbacks = [
+      'Desenvolvimento Web',
+      'Emails Corporativos',
+      'Criativos de Oferta',
+      'Tráfego Pago',
+      'Gestão de Conteúdos',
+      'SaaS (Software as a Service)',
+      'Suporte Técnico em TI'
+    ];
     fallbacks.forEach(opt => {
       const option = document.createElement('option');
       option.value = opt;
