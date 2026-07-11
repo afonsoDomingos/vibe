@@ -13,14 +13,18 @@
   <body>
     <!-- Preloader Screen -->
     <div id="preloader" class="preloader">
+      <div class="preloader__glow"></div>
       <div class="preloader__inner">
-        <span class="preloader__subtitle" data-i18n="preload_subtitle">INICIALIZANDO ESPAÇO DE TRABALHO</span>
+        <div class="preloader__logo">VIBE<span class="dot">.</span></div>
+        <div class="preloader__center">
+          <div id="preloader-percentage" class="preloader__percentage">000</div>
+        </div>
         <div class="preloader__progress">
           <div id="preloader-bar" class="preloader__bar"></div>
         </div>
         <div class="preloader__meta">
-          <span id="preloader-percentage" class="preloader__percentage">00%</span>
-          <span class="preloader__status" data-i18n="preload_status">CARREGANDO COMPONENTES_SISTEMA</span>
+          <span class="preloader__subtitle" data-i18n="preload_subtitle">INICIALIZANDO ESPAÇO DE TRABALHO</span>
+          <span id="preloader-log" class="preloader__status">> CARREGANDO COMPONENTES...</span>
         </div>
       </div>
     </div>

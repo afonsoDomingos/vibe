@@ -369,17 +369,22 @@ function initPreloader() {
   const progressBar = document.getElementById('preloader-bar');
   const percentageText = document.getElementById('preloader-percentage');
   const preloader = document.getElementById('preloader');
+  const logText = document.getElementById('preloader-log');
   
   let progress = 0;
   const interval = setInterval(() => {
-    progress += Math.floor(Math.random() * 8) + 2;
+    progress += Math.floor(Math.random() * 5) + 1;
     if (progress >= 100) {
       progress = 100;
       clearInterval(interval);
       
+      if (logText) {
+        logText.textContent = currentLang === 'pt' ? '> SISTEMA PRONTO.' : '> SYSTEM READY.';
+      }
+      
       gsap.to(preloader, {
         opacity: 0,
-        duration: 0.8,
+        duration: 1.0,
         ease: 'power3.inOut',
         onComplete: () => {
           preloader.classList.add('fade-out');
@@ -388,9 +393,30 @@ function initPreloader() {
       });
     }
     
-    progressBar.style.width = `${progress}%`;
-    percentageText.textContent = `${progress.toString().padStart(2, '0')}%`;
-  }, 30);
+    if (progressBar) progressBar.style.width = `${progress}%`;
+    if (percentageText) {
+      percentageText.textContent = progress.toString().padStart(3, '0');
+    }
+    
+    // Dynamically update terminal-style logs in current language
+    if (logText && progress < 100) {
+      if (currentLang === 'pt') {
+        if (progress < 15) logText.textContent = '> INICIALIZANDO NÚCLEO...';
+        else if (progress < 35) logText.textContent = '> CONECTANDO AO BANCO DE DADOS...';
+        else if (progress < 55) logText.textContent = '> CARREGANDO ELEMENTOS WebGL...';
+        else if (progress < 75) logText.textContent = '> IMPORTANDO TEXTURAS sRGB...';
+        else if (progress < 90) logText.textContent = '> CALIBRANDO RENDERIZADOR 3D...';
+        else logText.textContent = '> SINCRONIZANDO ANIMAÇÕES...';
+      } else {
+        if (progress < 15) logText.textContent = '> INITIALIZING CORE ENGINE...';
+        else if (progress < 35) logText.textContent = '> CONNECTING TO DATABASE...';
+        else if (progress < 55) logText.textContent = '> LOADING WebGL ELEMENTS...';
+        else if (progress < 75) logText.textContent = '> IMPORTING sRGB TEXTURES...';
+        else if (progress < 90) logText.textContent = '> CALIBRATING 3D RENDERER...';
+        else logText.textContent = '> SYNCHRONIZING TIMELINES...';
+      }
+    }
+  }, 40);
 }
 
 function revealHero() {
