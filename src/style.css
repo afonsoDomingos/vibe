@@ -489,7 +489,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  padding: 0 40px;
+  padding: 0 20px;
 }
 
 .marquee-item {
@@ -498,7 +498,7 @@ html, body {
 
 .marquee-link {
   font-family: var(--font-mono);
-  font-size: 22px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-muted);
   text-decoration: none;
