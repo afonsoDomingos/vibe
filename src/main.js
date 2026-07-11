@@ -11,6 +11,7 @@ const TRANSLATIONS = {
     cursor_label: "VER",
     nav_works: "Trabalhos em Destaque",
     nav_archive: "Arquivo",
+    nav_services: "Serviços",
     nav_about: "Sobre",
     nav_admin: "Admin",
     btn_dimensions: "Dimensões",
@@ -86,6 +87,7 @@ const TRANSLATIONS = {
     cursor_label: "VIEW",
     nav_works: "Featured Works",
     nav_archive: "Archive",
+    nav_services: "Services",
     nav_about: "About",
     nav_admin: "Admin",
     btn_dimensions: "Dimensions",
@@ -433,16 +435,40 @@ function initNavigation() {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const target = link.getAttribute('data-section');
-      if (target === activeSection) return;
+      
+      let sectionToActivate = target;
+      let isServicesLink = false;
+      
+      if (target === 'services') {
+        sectionToActivate = 'about';
+        isServicesLink = true;
+      }
+
+      if (sectionToActivate === activeSection) {
+        if (isServicesLink) {
+          const servicesList = document.getElementById('about-services-list');
+          const aboutSection = document.getElementById('section-about');
+          if (aboutSection && servicesList) {
+            aboutSection.scrollTo({
+              top: servicesList.getBoundingClientRect().top + aboutSection.scrollTop - 140,
+              behavior: 'smooth'
+            });
+          }
+          document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+          const servicesNav = document.querySelector(`.nav-link[data-section="services"]`);
+          if (servicesNav) servicesNav.classList.add('active');
+        }
+        return;
+      }
 
       document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
       const activeNav = document.querySelector(`.nav-link[data-section="${target}"]`);
       if (activeNav) activeNav.classList.add('active');
 
       let letteringText = 'FW';
-      if (target === 'archive') letteringText = 'AR';
-      if (target === 'about') letteringText = 'AB';
-      if (target === 'admin') letteringText = 'AD';
+      if (sectionToActivate === 'archive') letteringText = 'AR';
+      if (sectionToActivate === 'about') letteringText = 'AB';
+      if (sectionToActivate === 'admin') letteringText = 'AD';
 
       gsap.to(bgLettering, {
         opacity: 0,
@@ -461,7 +487,7 @@ function initNavigation() {
       });
 
       const currentSec = document.querySelector(`.section-view.active`);
-      const targetSec = document.getElementById(`section-${target}`);
+      const targetSec = document.getElementById(`section-${sectionToActivate}`);
 
       gsap.to(currentSec, {
         opacity: 0,
@@ -474,14 +500,31 @@ function initNavigation() {
           
           gsap.fromTo(targetSec, 
             { opacity: 0, scale: 1.03 },
-            { opacity: 1, scale: 1, duration: 0.8, ease: 'power3.out' }
+            { 
+              opacity: 1, 
+              scale: 1, 
+              duration: 0.8, 
+              ease: 'power3.out',
+              onComplete: () => {
+                if (isServicesLink) {
+                  const servicesList = document.getElementById('about-services-list');
+                  const aboutSection = document.getElementById('section-about');
+                  if (aboutSection && servicesList) {
+                    aboutSection.scrollTo({
+                      top: servicesList.getBoundingClientRect().top + aboutSection.scrollTop - 140,
+                      behavior: 'smooth'
+                    });
+                  }
+                }
+              }
+            }
           );
         }
       });
 
-      activeSection = target;
+      activeSection = sectionToActivate;
       
-      if (target === 'admin') {
+      if (sectionToActivate === 'admin') {
         checkAdminSession();
       }
     });
@@ -1467,6 +1510,7 @@ function populateRequestServiceDropdown() {
       'Tráfego Pago',
       'Gestão de Conteúdos',
       'SaaS (Software as a Service)',
+      'Registo de Domínio',
       'Suporte Técnico em TI'
     ];
     fallbacks.forEach(opt => {
@@ -1493,6 +1537,8 @@ function initClientRequestModal() {
   const form = document.getElementById('client-request-form');
   const errorText = document.getElementById('req-form-error');
   const successText = document.getElementById('req-form-success');
+  const domainPricing = document.getElementById('domain-pricing-container');
+  const serviceSelect = document.getElementById('req-service-select');
 
   if (!overlay || !openBtn || !closeBtn) return;
 
@@ -1502,7 +1548,20 @@ function initClientRequestModal() {
     errorText.style.display = 'none';
     successText.style.display = 'none';
     form.reset();
+    if (domainPricing) {
+      domainPricing.classList.add('hidden');
+    }
   });
+
+  if (serviceSelect && domainPricing) {
+    serviceSelect.addEventListener('change', () => {
+      if (serviceSelect.value === 'Registo de Domínio') {
+        domainPricing.classList.remove('hidden');
+      } else {
+        domainPricing.classList.add('hidden');
+      }
+    });
+  }
 
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');

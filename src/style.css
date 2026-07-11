@@ -512,6 +512,38 @@ html, body {
   transform: translateX(10px);
 }
 
+/* Color sets for different links to create a colored Matrix data stream effect */
+.works-marquee__list li:nth-child(6n+1) {
+  --code-comp-color: #00ff66; /* Neon Green */
+  --code-attr-color: #00e5ff; /* Cyan */
+  --code-str-color: #ff007f;  /* Hot Pink */
+}
+.works-marquee__list li:nth-child(6n+2) {
+  --code-comp-color: #ffb300; /* Gold */
+  --code-attr-color: #d500f9; /* Purple */
+  --code-str-color: #00e676;  /* Mint Green */
+}
+.works-marquee__list li:nth-child(6n+3) {
+  --code-comp-color: #ff5d00; /* Neon Orange */
+  --code-attr-color: #ffd600; /* Yellow */
+  --code-str-color: #2979ff;  /* Blue */
+}
+.works-marquee__list li:nth-child(6n+4) {
+  --code-comp-color: #ffffff; /* White */
+  --code-attr-color: #00ff66; /* Green */
+  --code-str-color: #ff1744;  /* Red */
+}
+.works-marquee__list li:nth-child(6n+5) {
+  --code-comp-color: #7c4dff; /* Indigo */
+  --code-attr-color: #00e5ff; /* Cyan */
+  --code-str-color: #ffeb3b;  /* Yellow */
+}
+.works-marquee__list li:nth-child(6n+6) {
+  --code-comp-color: #ff1744; /* Laser Red */
+  --code-attr-color: #ffd600; /* Gold */
+  --code-str-color: #00ff66;  /* Neon Green */
+}
+
 .marquee-link .code-component {
   color: var(--text-muted);
   transition: color 0.3s ease;
@@ -531,19 +563,19 @@ html, body {
 
 .marquee-link:hover .code-component,
 .marquee-item.active .marquee-link .code-component {
-  color: #ffb300; /* Amber/Gold for component name */
+  color: var(--code-comp-color);
 }
 .marquee-link:hover .code-attr,
 .marquee-item.active .marquee-link .code-attr {
-  color: #4fc3f7; /* Cyan/Light Blue for attribute key */
+  color: var(--code-attr-color);
 }
 .marquee-link:hover .code-string,
 .marquee-item.active .marquee-link .code-string {
-  color: var(--accent-color); /* Vibrant Orange for string value */
+  color: var(--code-str-color);
 }
 .marquee-link:hover .code-punct,
 .marquee-item.active .marquee-link .code-punct {
-  color: #ffffff; /* White for brackets/equal sign */
+  color: #ffffff;
 }
 
 /* ARCHIVE VIEW */
@@ -1854,6 +1886,64 @@ html, body {
 .btn-table-whatsapp:hover {
   background-color: #4caf50;
   color: #000;
+}
+
+/* Domain Pricing Grid and Card Styles */
+#domain-pricing-container {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  background-color: #121215;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 15px;
+}
+
+#domain-pricing-container label {
+  color: var(--accent-color) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  letter-spacing: 0.1em !important;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.domain-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 576px) {
+  .domain-pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.domain-price-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1a1e;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+}
+
+.domain-tld {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.domain-price {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--accent-color);
+  margin-top: 4px;
 }
 
 

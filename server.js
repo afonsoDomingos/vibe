@@ -111,7 +111,8 @@ async function seedInitialServices() {
       { title: 'Tráfego Pago', description: 'Gestão de anúncios no Meta Ads, Google Ads, etc.', order: 3 },
       { title: 'Gestão de Conteúdos', description: 'Planeamento, criação e publicação de conteúdos', order: 4 },
       { title: 'SaaS (Software as a Service)', description: 'Desenvolvimento e hospedagem de aplicações na nuvem', order: 5 },
-      { title: 'Suporte Técnico em TI', description: 'Assistência e manutenção de infraestrutura tecnológica', order: 6 }
+      { title: 'Registo de Domínio', description: 'Registo e manutenção de domínios nacionais e internacionais', order: 6 },
+      { title: 'Suporte Técnico em TI', description: 'Assistência e manutenção de infraestrutura tecnológica', order: 7 }
     ];
     await Service.insertMany(initialServices);
     console.log('New services seeded successfully.');
