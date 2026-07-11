@@ -838,7 +838,12 @@ function initThreeCanvas() {
       cursor.classList.remove('viewing');
     }
 
-    renderer.render(scene, camera);
+    const worksSecElement = document.getElementById('section-works');
+    const isWorksActive = worksSecElement && (activeSection === 'works' || parseFloat(window.getComputedStyle(worksSecElement).opacity) > 0.05);
+
+    if (isWorksActive) {
+      renderer.render(scene, camera);
+    }
   }
 
   animate();
