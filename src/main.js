@@ -462,28 +462,27 @@ function initNavigation() {
       e.preventDefault();
       const target = link.getAttribute('data-section');
       
-      let sectionToActivate = target;
-      let isServicesLink = false;
-      
       if (target === 'services') {
-        sectionToActivate = 'about';
-        isServicesLink = true;
+        const overlay = document.getElementById('request-overlay');
+        const form = document.getElementById('client-request-form');
+        const errorText = document.getElementById('req-form-error');
+        const successText = document.getElementById('req-form-success');
+        const domainPricing = document.getElementById('domain-pricing-container');
+        
+        if (overlay) {
+          overlay.classList.remove('hidden');
+          populateRequestServiceDropdown();
+          if (errorText) errorText.style.display = 'none';
+          if (successText) successText.style.display = 'none';
+          if (form) form.reset();
+          if (domainPricing) domainPricing.classList.add('hidden');
+        }
+        return;
       }
 
+      const sectionToActivate = target;
+
       if (sectionToActivate === activeSection) {
-        if (isServicesLink) {
-          const servicesList = document.getElementById('about-services-list');
-          const aboutSection = document.getElementById('section-about');
-          if (aboutSection && servicesList) {
-            aboutSection.scrollTo({
-              top: servicesList.getBoundingClientRect().top + aboutSection.scrollTop - 140,
-              behavior: 'smooth'
-            });
-          }
-          document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-          const servicesNav = document.querySelector(`.nav-link[data-section="services"]`);
-          if (servicesNav) servicesNav.classList.add('active');
-        }
         return;
       }
 
