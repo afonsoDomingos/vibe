@@ -164,7 +164,7 @@ let servicesData = [];
 let currentLang = 'pt';
 const DEFAULT_COLOR = '#ff3a00';
 let editServiceId = null;
-const getBaseCameraZ = () => window.innerWidth <= 768 ? 3.6 : 5.2;
+const getBaseCameraZ = () => window.innerWidth <= 768 ? 4.3 : 5.2;
 
 // Zoom timers and active selections
 let zoomTimeout = null;
