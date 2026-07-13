@@ -1291,10 +1291,29 @@ html, body {
     border: none;
   }
   .works-sidebar {
-    padding: 20px 20px 10px 20px;
+    padding: 15px 20px 5px 20px;
+  }
+  .works-sidebar .dev-info {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  .works-sidebar .dev-info__meta {
+    width: 48%;
+  }
+  .works-sidebar .dev-info__meta .value {
+    font-size: 18px;
+  }
+  .works-sidebar .dev-info__meta:last-child .value {
+    font-size: 13px;
+  }
+  .works-sidebar .dimension-label {
+    font-size: 11px;
   }
   .canvas-container {
-    height: 400px;
+    height: 430px;
   }
   .canvas-instruction {
     display: none !important;
