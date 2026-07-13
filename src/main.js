@@ -880,6 +880,7 @@ function buildThreeCubeGroup() {
   });
 
   cubeGroup = new THREE.Group();
+  cubeGroup.scale.set(1.35, 1.35, 1.35);
   scene.add(cubeGroup);
 
   const faceConfig = [
