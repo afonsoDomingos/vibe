@@ -630,6 +630,7 @@ let scene, camera, renderer;
 let cubeGroup;
 let panels = [];
 let textures = [];
+let maxAnisotropy = 1;
 const textureLoader = new THREE.TextureLoader();
 
 // THREE.JS 3D CANVAS BUILDER
@@ -652,8 +653,8 @@ function initThreeCanvas() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-  // Store GPU max anisotropy for high-quality texture filtering
-  const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+  // Read GPU max anisotropy for high-quality texture filtering
+  maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
   buildThreeCubeGroup();
 
