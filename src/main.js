@@ -189,23 +189,31 @@ let isGridActive = false;
 const cursor = document.getElementById('custom-cursor');
 let mouseX = 0, mouseY = 0;
 let cursorX = 0, cursorY = 0;
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-window.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-});
+if (!isTouchDevice) {
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
 
-function animateCursor() {
-  const ease = 0.15;
-  cursorX += (mouseX - cursorX) * ease;
-  cursorY += (mouseY - cursorY) * ease;
-  
-  cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
-  requestAnimationFrame(animateCursor);
+  function animateCursor() {
+    const ease = 0.15;
+    cursorX += (mouseX - cursorX) * ease;
+    cursorY += (mouseY - cursorY) * ease;
+    
+    if (cursor) {
+      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+    }
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+} else {
+  if (cursor) cursor.style.display = 'none';
 }
-animateCursor();
 
 function setupCursorHovers() {
+  if (isTouchDevice) return;
   const clickables = document.querySelectorAll('a, button, .availability, .nav-link, .marquee-link, input, select');
   clickables.forEach(el => {
     el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
@@ -641,7 +649,7 @@ function initThreeCanvas() {
     antialias: true
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   buildThreeCubeGroup();
@@ -859,6 +867,10 @@ function buildThreeCubeGroup() {
       p.material.dispose();
     });
     panels = [];
+    
+    // Dispose of all old textures to prevent memory leaks
+    textures.forEach(t => t.dispose());
+    textures = [];
   }
 
   textures = projectsData.map(p => {
