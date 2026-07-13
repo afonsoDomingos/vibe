@@ -1585,7 +1585,7 @@ function initClientRequestModal() {
 
   if (serviceSelect && domainPricing) {
     serviceSelect.addEventListener('change', () => {
-      if (serviceSelect.value === 'Registo de Domínio') {
+      if (serviceSelect.value === 'Emails Corporativos') {
         domainPricing.classList.remove('hidden');
       } else {
         domainPricing.classList.add('hidden');
