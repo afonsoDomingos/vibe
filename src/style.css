@@ -1339,6 +1339,17 @@ html, body {
     gap: 40px;
   }
 
+  /* ---- Box 3D: prevent clipping on mobile ---- */
+  #section-works {
+    overflow: visible;
+  }
+  .works-layout {
+    overflow: visible;
+  }
+  .canvas-container {
+    overflow: visible;
+  }
+
   /* ---- Request Modal Mobile Fixes ---- */
   .project-overlay {
     align-items: flex-start;
