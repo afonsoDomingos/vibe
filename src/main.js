@@ -649,8 +649,11 @@ function initThreeCanvas() {
     antialias: true
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  // Store GPU max anisotropy for high-quality texture filtering
+  const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
   buildThreeCubeGroup();
 
@@ -876,6 +879,11 @@ function buildThreeCubeGroup() {
   textures = projectsData.map(p => {
     const tex = textureLoader.load(p.image);
     tex.colorSpace = THREE.SRGBColorSpace;
+    // Sharper filtering: trilinear + max anisotropy
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.anisotropy = maxAnisotropy;
+    tex.needsUpdate = true;
     return tex;
   });
 
@@ -1610,6 +1618,22 @@ function initClientRequestModal() {
   closeBtn.addEventListener('click', () => {
     overlay.classList.add('hidden');
   });
+
+  // Mobile: ← Voltar top bar button
+  const backBtn = document.getElementById('request-back-btn');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      overlay.classList.add('hidden');
+    });
+  }
+
+  // Mobile: ✕ Fechar bottom button
+  const closeBtnBottom = document.getElementById('btn-request-close-bottom');
+  if (closeBtnBottom) {
+    closeBtnBottom.addEventListener('click', () => {
+      overlay.classList.add('hidden');
+    });
+  }
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {

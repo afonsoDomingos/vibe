@@ -477,6 +477,13 @@
     <!-- Service Request Overlay (Modal) -->
     <div id="request-overlay" class="project-overlay hidden">
       <div class="project-overlay__close-btn" id="request-overlay-close">&times;</div>
+
+      <!-- Mobile sticky back bar -->
+      <div class="modal-back-bar" id="request-back-bar">
+        <button class="modal-back-btn" id="request-back-btn">
+          &#8592; Voltar
+        </button>
+      </div>
       
       <div class="project-overlay__container request-modal-container">
         <!-- Left Side: Header Info -->
@@ -544,6 +551,7 @@
               <div class="form-success" id="req-form-success">Sua solicitação foi enviada com sucesso!</div>
 
               <button type="submit" id="btn-request-submit" class="btn-admin-submit">ENVIAR SOLICITAÇÃO ↗</button>
+              <button type="button" id="btn-request-close-bottom" class="btn-request-close-bottom">✕ Fechar</button>
             </form>
           </div>
         </div>
