@@ -509,11 +509,12 @@ html, body {
 
 .canvas-instruction {
   position: absolute;
-  bottom: 30px;
+  bottom: 12px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 8px;
   color: var(--text-muted);
-  letter-spacing: 0.1em;
+  opacity: 0.55;
+  letter-spacing: 0.08em;
   text-align: center;
   width: 100%;
   pointer-events: none;
